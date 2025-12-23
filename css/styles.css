@@ -1,0 +1,1595 @@
+:root {
+    --pink-soft: #F7A8C8;
+    --pink-light: #FFE2EE;
+    --purple-soft: #B39DDB;
+    --purple-dark: #7B6CFF;
+    --text-main: #1F1F25;
+    --border-soft: #E6E6EB;
+    --white: #ffffff;
+    --glow-blue: #7BE0FF;
+    --glow-purple: #C7B6FF;
+    --ink-soft: #2a2435;
+    --grain: repeating-linear-gradient(135deg,
+            rgba(255, 255, 255, 0.03) 0 2px,
+            rgba(0, 0, 0, 0.02) 2px 4px,
+            transparent 4px 6px);
+}
+
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #F7A8C8, #B39DDB);
+    color: var(--text-main);
+}
+
+
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    padding: 12px 16px;
+    border-radius: 18px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+    border: 1px solid var(--border-soft);
+}
+
+.avatar-circle.small {
+    width: 72px;
+    height: 72px;
+    box-shadow:
+        inset 0 -6px 10px rgba(0, 0, 0, 0.10),
+        0 12px 24px rgba(0, 0, 0, 0.16);
+}
+
+.user-name {
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+/* =====================================================
+     LAYOUT AVATAR
+     ===================================================== */
+
+.avatar-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+}
+
+.avatar-card {
+    position: relative;
+    background:
+        radial-gradient(circle at 22% 18%, rgba(123, 224, 255, 0.16), transparent 36%),
+        radial-gradient(circle at 78% 12%, rgba(195, 167, 255, 0.16), transparent 40%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.86));
+    width: 100%;
+    max-width: 420px;
+    border-radius: 28px;
+    padding: 26px;
+    border: 1px solid var(--border-soft);
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.6),
+        0 0 38px rgba(123, 224, 255, 0.26);
+    backdrop-filter: blur(8px);
+    overflow: hidden;
+}
+
+.avatar-card::after {
+    content: "";
+    position: absolute;
+    inset: -42% -42% auto auto;
+    height: 58%;
+    background: radial-gradient(circle at 25% 25%, rgba(123, 224, 255, 0.18), transparent 55%);
+    pointer-events: none;
+}
+
+/* Título */
+.avatar-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.avatar-subtitle {
+    font-size: 0.9rem;
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+/* =====================================================
+     AVATAR PREVIEW
+     ===================================================== */
+
+.avatar-preview {
+    display: grid;
+    place-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 14px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.68)),
+        radial-gradient(circle at 50% -10%, rgba(123, 224, 255, 0.12), transparent 55%);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 18px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* vinheta (dá “foto”) */
+.avatar-vignette {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, .20) 100%);
+    pointer-events: none;
+}
+
+/* micro-anim (premium feel) */
+.avatar-circle.is-changing {
+    animation: pop .16s ease-out;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(.97);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.avatar-name {
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* Base do avatar */
+.avatar-circle {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+
+    background: radial-gradient(circle at 30% 20%, #dfe9ee 0%, #9fb3bd 45%, #7f98a3 100%);
+
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.65),
+        inset 0 -8px 12px rgba(0, 0, 0, 0.10),
+        0 18px 36px rgba(0, 0, 0, 0.22),
+        0 0 38px rgba(123, 224, 255, 0.35),
+        0 0 0 8px rgba(255, 255, 255, 0.08),
+        0 0 0 1px rgba(42, 36, 53, 0.06),
+        0 28px 46px rgba(0, 0, 0, 0.25);
+
+    transition: transform .2s ease;
+    animation: breathe 4s ease-in-out infinite;
+}
+
+.avatar-card .avatar-circle {
+    width: 180px;
+    height: 180px;
+}
+
+.avatar-circle::before {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.45), transparent 55%),
+        radial-gradient(circle at 30% 70%, rgba(123, 224, 255, 0.28), transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(123, 188, 255, 0.22), transparent 65%),
+        conic-gradient(from 220deg at 50% 50%, rgba(255, 255, 255, 0.16), transparent 40%, rgba(123, 224, 255, 0.26) 70%, transparent 100%);
+    filter: blur(7px);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.avatar-circle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+        radial-gradient(40% 26% at 35% 62%, rgba(255, 168, 200, 0.18), transparent 60%),
+        radial-gradient(40% 26% at 65% 62%, rgba(255, 168, 200, 0.18), transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(123, 224, 255, 0.16), transparent 70%),
+        var(--grain);
+    background-blend-mode: normal, normal, normal, soft-light;
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.6);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.avatar-circle:hover {
+    transform: translateY(-2px);
+}
+
+.avatar-light {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.avatar-head {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 2;
+}
+
+.face {
+    position: absolute;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* =====================================================
+     CAMADAS DO AVATAR
+     ===================================================== */
+
+/* CABELO */
+.hair {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 90px;
+
+    background:
+        linear-gradient(to bottom, #3B3B3B, #1F1F1F),
+        var(--grain);
+    background-blend-mode: normal, soft-light;
+    border-radius: 0 0 90px 90px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 -10px 10px rgba(0, 0, 0, 0.35),
+        inset 0 8px 12px rgba(255, 255, 255, 0.08),
+        0 0 0 1px rgba(31, 31, 37, 0.08),
+        0 10px 20px rgba(0, 0, 0, 0.18);
+    z-index: 3;
+}
+
+.hair::before {
+    content: "";
+    position: absolute;
+    inset: 8% 10% auto 10%;
+    height: 38%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 70%);
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.hair-short {
+    height: 44%;
+}
+
+.hair-fringe {
+    height: 48%;
+    clip-path: ellipse(90% 75% at 50% 35%);
+}
+
+.hair-long {
+    height: 62%;
+    border-radius: 0 0 40% 40%;
+}
+
+.hair-pony {
+    height: 52%;
+    border-radius: 0 0 46% 46%;
+    box-shadow:
+        inset 0 -8px 10px rgba(0, 0, 0, 0.32),
+        0 8px 14px rgba(0, 0, 0, 0.15);
+}
+
+.hair-pony::after {
+    content: "";
+    position: absolute;
+    right: 14%;
+    bottom: -8px;
+    width: 16px;
+    height: 34px;
+    background: inherit;
+    border-radius: 12px;
+    transform: rotate(8deg);
+}
+
+.hair-mohawk {
+    height: 58%;
+    width: 84%;
+    left: 8%;
+    clip-path: polygon(50% 0%, 60% 12%, 70% 0%, 80% 12%, 90% 0%, 92% 40%, 8% 40%, 10% 0%, 20% 12%, 30% 0%, 40% 12%);
+    box-shadow:
+        inset 0 -10px 12px rgba(0, 0, 0, 0.28),
+        0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.hair-braids {
+    height: 60%;
+    border-radius: 0 0 44% 44%;
+    box-shadow:
+        inset 0 -8px 10px rgba(0, 0, 0, 0.32),
+        0 10px 18px rgba(0, 0, 0, 0.16);
+}
+
+.hair-braids::before,
+.hair-braids::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 46px;
+    background: inherit;
+    border-radius: 12px;
+    bottom: -18px;
+    box-shadow:
+        inset 0 -6px 8px rgba(0, 0, 0, 0.26),
+        0 6px 12px rgba(0, 0, 0, 0.22);
+}
+
+.hair-braids::before {
+    left: 16%;
+    transform: rotate(-6deg);
+}
+
+.hair-braids::after {
+    right: 16%;
+    transform: rotate(6deg);
+}
+
+.hair-curly {
+    height: 64%;
+    border-radius: 0 0 48% 48%;
+    clip-path: ellipse(56% 58% at 50% 46%);
+    box-shadow:
+        inset 0 -10px 12px rgba(0, 0, 0, 0.30),
+        0 10px 18px rgba(0, 0, 0, 0.18);
+}
+
+.hair-curly::before,
+.hair-curly::after {
+    content: "";
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: inherit;
+    border-radius: 50%;
+    box-shadow:
+        inset 0 -6px 10px rgba(0, 0, 0, 0.24),
+        0 6px 12px rgba(0, 0, 0, 0.18);
+    bottom: -6px;
+}
+
+.hair-curly::before {
+    left: 18%;
+}
+
+.hair-curly::after {
+    right: 18%;
+}
+
+.hair-bob {
+    height: 48%;
+    border-radius: 0 0 52% 52%;
+    box-shadow:
+        inset 0 -8px 12px rgba(0, 0, 0, 0.28),
+        0 8px 16px rgba(0, 0, 0, 0.16);
+    clip-path: ellipse(90% 90% at 50% 10%);
+}
+
+.hair-bob::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 8%;
+    width: 84%;
+    height: 18px;
+    background: inherit;
+    border-radius: 12px;
+    opacity: 0.75;
+}
+
+.hair-bun::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    background: inherit;
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+.hair-wavy::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    width: 100%;
+    height: 12px;
+    background: inherit;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+/* OLHOS */
+.eyes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    z-index: 4;
+}
+
+.eyes::before,
+.eyes::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 30%, rgba(31, 31, 37, 1) 65%);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.24),
+        0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.eyes-2::before,
+.eyes-2::after {
+    height: 6px;
+    border-radius: 0 0 12px 12px;
+}
+
+.eyes-3::before,
+.eyes-3::after {
+    height: 2px;
+    border-radius: 4px;
+}
+
+.eyes-4::before,
+.eyes-4::after {
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(145deg, #fff, #e4d7ff);
+    box-shadow:
+        0 0 0 3px rgba(31, 31, 37, 0.65),
+        0 6px 12px rgba(0, 0, 0, 0.25),
+        0 0 12px rgba(199, 182, 255, 0.6);
+}
+
+.eyes-5::before,
+.eyes-5::after {
+    height: 4px;
+    width: 16px;
+    border-radius: 999px;
+    background: var(--text-main);
+    box-shadow: none;
+}
+
+.eyes-6::before,
+.eyes-6::after {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 50% 40%, #8af0ff 0%, #4cc4ff 55%, #0f6fff 100%);
+    box-shadow:
+        0 0 0 3px rgba(15, 111, 255, 0.35),
+        0 0 14px rgba(123, 224, 255, 0.55),
+        0 8px 12px rgba(0, 0, 0, 0.24);
+}
+
+.eyes-7::before,
+.eyes-7::after {
+    width: 16px;
+    height: 8px;
+    background: var(--text-main);
+    border-radius: 12px 12px 4px 4px;
+    transform: skewX(-10deg);
+}
+
+.eyes-8::before,
+.eyes-8::after {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 40% 35%, #fff 0%, #ffe57f 35%, #ff9f43 100%);
+    box-shadow:
+        0 0 0 3px rgba(255, 159, 67, 0.4),
+        0 6px 12px rgba(0, 0, 0, 0.25),
+        0 0 16px rgba(255, 205, 86, 0.6);
+    transform: scale(1.1);
+}
+
+.eyes-9::before,
+.eyes-9::after {
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle at 50% 50%, #ff4d6d 0%, #ff1e56 60%, #b31245 100%);
+    box-shadow:
+        0 0 0 3px rgba(255, 77, 109, 0.35),
+        0 0 14px rgba(255, 77, 109, 0.55),
+        0 6px 12px rgba(0, 0, 0, 0.22);
+    border-radius: 50% 50% 42% 42% / 60% 60% 40% 40%;
+}
+
+.eyes-10::before,
+.eyes-10::after {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 50% 35%, #fff 0%, #ffe8a6 45%, #ffbe6f 100%);
+    box-shadow:
+        0 0 0 3px rgba(255, 190, 111, 0.4),
+        0 6px 12px rgba(0, 0, 0, 0.22),
+        0 0 14px rgba(255, 214, 102, 0.55);
+    transform: scale(1.05) rotate(-4deg);
+}
+
+.eyes-11::before,
+.eyes-11::after {
+    width: 12px;
+    height: 14px;
+    background: radial-gradient(circle at 50% 40%, #fff 0%, #dff2ff 45%, #7bcfff 100%);
+    box-shadow:
+        0 0 0 3px rgba(123, 207, 255, 0.35),
+        0 6px 12px rgba(0, 0, 0, 0.2),
+        0 0 14px rgba(123, 207, 255, 0.6);
+    border-radius: 40% 40% 50% 50% / 60% 60% 40% 40%;
+    transform: translateY(2px);
+}
+
+.eyes-mentor::before,
+.eyes-mentor::after {
+    width: 14px;
+    height: 10px;
+    background: radial-gradient(circle at 40% 35%, #fff 0%, #f5e6ff 45%, #1f1f25 90%);
+    border-radius: 12px;
+    box-shadow:
+        0 0 0 3px rgba(31, 31, 37, 0.55),
+        0 8px 14px rgba(0, 0, 0, 0.24);
+    transform: translateY(2px);
+}
+
+.eyes-confident::before,
+.eyes-confident::after {
+    width: 16px;
+    height: 10px;
+    background: radial-gradient(circle at 45% 35%, #fff 0%, #fef6d8 40%, #1f1f25 90%);
+    border-radius: 12px 12px 10px 10px;
+    box-shadow:
+        0 0 0 3px rgba(31, 31, 37, 0.65),
+        0 10px 16px rgba(0, 0, 0, 0.28);
+    transform: translateY(1px) rotate(-4deg);
+}
+
+.eyes-rebel::before,
+.eyes-rebel::after {
+    width: 16px;
+    height: 8px;
+    background: linear-gradient(135deg, #1f1f25 0%, #3b2a4f 80%);
+    border-radius: 12px 12px 6px 6px;
+    box-shadow:
+        0 0 0 3px rgba(31, 31, 37, 0.55),
+        0 8px 14px rgba(0, 0, 0, 0.26);
+    transform: skewX(-8deg) translateY(2px);
+}
+
+.eyes-smart::before,
+.eyes-smart::after {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 50% 40%, #e8f3ff 0%, #9ed0ff 45%, #1f4ea8 100%);
+    box-shadow:
+        0 0 0 3px rgba(29, 86, 160, 0.4),
+        0 0 0 6px rgba(255, 255, 255, 0.22),
+        0 8px 12px rgba(0, 0, 0, 0.22);
+    border-radius: 50%;
+    transform: translateY(1px);
+}
+
+.eyes-friendly::before,
+.eyes-friendly::after {
+    width: 15px;
+    height: 12px;
+    background: radial-gradient(circle at 45% 35%, #fff 0%, #ffe3d4 50%, #1f1f25 90%);
+    border-radius: 14px;
+    box-shadow:
+        0 0 0 3px rgba(31, 31, 37, 0.5),
+        0 8px 12px rgba(0, 0, 0, 0.22);
+    transform: translateY(1px) rotate(2deg);
+}
+
+/* BOCA */
+.mouth {
+    position: relative;
+    width: 38px;
+    height: 18px;
+    z-index: 4;
+}
+
+.mouth::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-bottom: 4px solid rgba(20, 20, 20, .85);
+    border-radius: 0 0 28px 28px;
+    opacity: .9;
+}
+
+.mouth--soft::before {
+    border-bottom-width: 3px;
+}
+
+.mouth--neutral::before {
+    border-bottom-width: 3px;
+    border-radius: 0 0 22px 22px;
+}
+
+.mouth-2::before {
+    height: 14px;
+    border-radius: 0 0 24px 24px;
+}
+
+.mouth-3::before {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid var(--text-main);
+    background: transparent;
+}
+
+.mouth-4::before {
+    width: 30px;
+    height: 12px;
+    border-bottom: 3px solid var(--text-main);
+    border-radius: 0 0 18px 18px;
+    transform: rotate(-4deg);
+}
+
+.mouth-5::before {
+    width: 28px;
+    height: 18px;
+    border: 3px solid var(--text-main);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #ffccd5, #ff9fb8);
+}
+
+.mouth-6::before {
+    width: 30px;
+    height: 16px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #1f1f25 0%, #0e0e14 100%);
+    border: 3px solid var(--text-main);
+    box-shadow: inset 0 -6px 0 #ff4d6d;
+}
+
+.mouth-7::before {
+    width: 30px;
+    height: 4px;
+    border-radius: 12px;
+    background: var(--text-main);
+}
+
+.mouth-8::before {
+    width: 30px;
+    height: 16px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #140d1f 0%, #0b0714 100%);
+    border: 3px solid #0b0714;
+    box-shadow:
+        inset 0 -4px 0 #ff4d6d,
+        0 6px 12px rgba(0, 0, 0, 0.22);
+}
+
+.mouth-9::before {
+    width: 32px;
+    height: 18px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ff8faf 0%, #ff4d6d 80%);
+    border: 3px solid var(--text-main);
+    box-shadow:
+        inset 0 -6px 0 #ffccd5,
+        0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mouth-10::before {
+    width: 32px;
+    height: 18px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffd4e6 0%, #ff9ac9 80%);
+    border: 3px solid var(--text-main);
+    box-shadow:
+        inset 0 -6px 0 #ff6f9f,
+        0 6px 12px rgba(0, 0, 0, 0.22);
+}
+
+.mouth-11::before {
+    width: 30px;
+    height: 16px;
+    border-radius: 50% 50% 60% 60% / 70% 70% 40% 40%;
+    background: var(--text-main);
+    box-shadow:
+        inset 0 -6px 0 #ff4d6d,
+        0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mouth-mentor::before {
+    width: 30px;
+    height: 16px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #f0e7ff 0%, #d3c4ff 90%);
+    border: 3px solid #1f1f25;
+    box-shadow:
+        inset 0 -6px 0 rgba(255, 255, 255, 0.4),
+        0 6px 12px rgba(0, 0, 0, 0.22);
+}
+
+.mouth-confident::before {
+    width: 32px;
+    height: 12px;
+    border-radius: 50% 50% 60% 60% / 80% 80% 40% 40%;
+    background: linear-gradient(180deg, #1f1f25 0%, #0f0f16 100%);
+    border: 3px solid #1f1f25;
+    box-shadow:
+        inset 0 -4px 0 #7b6cff,
+        0 6px 12px rgba(0, 0, 0, 0.22);
+    transform: translateY(1px);
+}
+
+.mouth-rebel::before {
+    width: 32px;
+    height: 10px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff4d6d 0%, #7b1f3f 100%);
+    border: 3px solid #1f1f25;
+    box-shadow:
+        inset 0 -4px 0 rgba(255, 255, 255, 0.25),
+        0 6px 12px rgba(0, 0, 0, 0.24);
+    transform: skewX(-8deg) translateY(2px);
+}
+
+.mouth-smart::before {
+    width: 34px;
+    height: 14px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #e8f3ff 0%, #b7d8ff 90%);
+    border: 3px solid #1f4ea8;
+    box-shadow:
+        inset 0 -4px 0 rgba(255, 255, 255, 0.5),
+        0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(1px);
+}
+
+.mouth-friendly::before {
+    width: 32px;
+    height: 14px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffe3d4 0%, #ffb6a9 85%);
+    border: 3px solid #1f1f25;
+    box-shadow:
+        inset 0 -6px 0 rgba(255, 255, 255, 0.4),
+        0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(1px);
+}
+
+/* ROUPA */
+.clothes {
+    position: absolute;
+    bottom: -8px;
+    left: -10%;
+    width: 120%;
+    height: 62px;
+    z-index: 2;
+    opacity: .9;
+}
+
+.clothes::before {
+    content: "";
+    width: 74%;
+    height: 62px;
+    background:
+        linear-gradient(165deg, var(--purple-soft) 0%, var(--purple-dark) 70%),
+        var(--grain);
+    background-blend-mode: normal, soft-light;
+    border-radius: 26px 26px 34px 34px;
+    box-shadow:
+        inset 0 8px 14px rgba(255, 255, 255, 0.28),
+        0 -8px 14px rgba(0, 0, 0, 0.18),
+        0 10px 22px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(31, 31, 37, 0.05);
+}
+
+.clothes::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    width: 56%;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.32), transparent 70%);
+    filter: blur(6px);
+    pointer-events: none;
+}
+
+.clothes-2::before {
+    background: linear-gradient(to bottom, #7BCFFF, #3E8BFF);
+}
+
+.clothes-3::before {
+    background: linear-gradient(to bottom, #FFCDA5, #FF9B73);
+}
+
+.clothes-4::before {
+    background: linear-gradient(145deg, #0dd4ff, #2a8bff);
+}
+
+.clothes-5::before {
+    background: linear-gradient(145deg, #1b1540, #4a3ccf);
+    box-shadow:
+        inset 0 12px 20px rgba(255, 255, 255, 0.12),
+        0 -8px 14px rgba(0, 0, 0, 0.2),
+        0 0 18px rgba(123, 188, 255, 0.32);
+}
+
+.clothes-6::before {
+    background: linear-gradient(160deg, #d9e4ef, #9fb6ce);
+    box-shadow:
+        inset 0 10px 16px rgba(255, 255, 255, 0.28),
+        0 -10px 16px rgba(0, 0, 0, 0.2),
+        0 0 18px rgba(146, 189, 255, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.clothes-7::before {
+    background: linear-gradient(145deg, #0ef0c7, #3a6bff);
+    box-shadow:
+        inset 0 12px 20px rgba(255, 255, 255, 0.14),
+        0 -12px 18px rgba(0, 0, 0, 0.22),
+        0 0 22px rgba(122, 240, 255, 0.55);
+}
+
+.clothes-8::before {
+    background: linear-gradient(180deg, #1f1f25 0%, #32324d 80%);
+    box-shadow:
+        inset 0 12px 18px rgba(255, 255, 255, 0.1),
+        0 -10px 18px rgba(0, 0, 0, 0.2),
+        0 0 24px rgba(123, 188, 255, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.clothes-9::before {
+    background: linear-gradient(150deg, #00f2ff, #7b6cff 55%, #ff6fb1);
+    box-shadow:
+        inset 0 14px 22px rgba(255, 255, 255, 0.16),
+        0 -12px 20px rgba(0, 0, 0, 0.24),
+        0 0 28px rgba(0, 242, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.clothes-10::before {
+    background: linear-gradient(175deg, #f8e6ff 0%, #d3b8ff 60%, #b39ddb);
+    box-shadow:
+        inset 0 12px 18px rgba(255, 255, 255, 0.16),
+        0 -10px 18px rgba(0, 0, 0, 0.18),
+        0 0 20px rgba(195, 167, 255, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.clothes-11::before {
+    background: linear-gradient(165deg, #ffb8d9 0%, #ff82c6 55%, #f75fa5 100%);
+    box-shadow:
+        inset 0 14px 20px rgba(255, 255, 255, 0.16),
+        0 -12px 20px rgba(0, 0, 0, 0.2),
+        0 0 24px rgba(255, 130, 198, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ACESSÓRIOS */
+.accessory {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.acc-bow,
+.acc-glasses,
+.acc-cap,
+.acc-visor,
+.acc-mask,
+.acc-crown,
+.acc-headphones,
+.acc-star,
+.acc-headband,
+.acc-flower {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.acc-bow {
+    top: 14%;
+    left: 24%;
+    transform: translate(-50%, -40%) rotate(-10deg);
+}
+
+.acc-glasses {
+    top: 46%;
+    width: 78px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+}
+
+.acc-cap {
+    top: 12%;
+    transform: translate(-50%, -50%);
+}
+
+.acc-visor {
+    top: 32%;
+    width: 90%;
+    transform: translate(-50%, -40%);
+}
+
+.acc-mask {
+    top: 62%;
+    width: 80%;
+    transform: translate(-50%, -50%);
+}
+
+.acc-crown {
+    top: 4%;
+    transform: translate(-50%, -40%);
+}
+
+.acc-headphones {
+    inset: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transform: none;
+}
+
+.acc-star {
+    top: 16%;
+    left: 76%;
+    transform: translate(-50%, -50%) rotate(8deg);
+}
+
+.acc-headband {
+    top: 14%;
+}
+
+.acc-flower {
+    top: 12%;
+    left: 22%;
+    transform: translate(-50%, -50%);
+}
+
+.acc-bow::before {
+    content: "🎀";
+    font-size: 36px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+}
+
+.acc-glasses::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    border: 3px solid #1F1F25;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.acc-glasses::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 3px;
+    background: #1F1F25;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.acc-cap::before {
+    content: "";
+    width: 64px;
+    height: 26px;
+    background: linear-gradient(135deg, #333, #111);
+    border-radius: 20px 20px 10px 10px;
+    position: absolute;
+    top: -18px;
+    box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.35);
+}
+
+.acc-visor::before {
+    content: "";
+    width: 76%;
+    height: 18px;
+    background: linear-gradient(145deg, #5cf0ff, #7b6cff);
+    border-radius: 14px;
+    position: absolute;
+    top: 6%;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.35),
+        0 6px 12px rgba(0, 0, 0, 0.25),
+        0 0 16px rgba(123, 224, 255, 0.45);
+}
+
+.acc-mask::before {
+    content: "";
+    width: 100%;
+    height: 28px;
+    background: linear-gradient(180deg, #1f1f25, #0f0f16);
+    border-radius: 14px;
+    position: absolute;
+    top: 0;
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 255, 255, 0.05),
+        0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.acc-crown::before {
+    content: "👑";
+    position: absolute;
+    top: -12px;
+    font-size: 28px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.22));
+}
+
+.acc-halo::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 86%;
+    height: 16px;
+    transform: translateX(-50%);
+    border: 4px solid rgba(255, 230, 120, 0.9);
+    border-radius: 999px;
+    box-shadow:
+        0 0 18px rgba(255, 230, 120, 0.9),
+        0 8px 14px rgba(0, 0, 0, 0.18);
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6), transparent 65%);
+}
+
+.acc-earrings::before,
+.acc-earrings::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 18px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #ffe8a3, #ffd36f);
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.25),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.4);
+    top: 54%;
+}
+
+.acc-earrings::before {
+    left: 6%;
+}
+
+.acc-earrings::after {
+    right: 6%;
+}
+
+.acc-headphones::before,
+.acc-headphones::after {
+    content: "";
+    position: absolute;
+}
+
+.acc-headphones::before {
+    width: 78%;
+    height: 42%;
+    left: 11%;
+    top: 8%;
+    border: 5px solid #1f1f25;
+    border-bottom: transparent;
+    border-radius: 80% 80% 60% 60%;
+    background: linear-gradient(145deg, #2e2b4b, #1f1f25);
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.08),
+        0 8px 18px rgba(0, 0, 0, 0.32);
+}
+
+.acc-headphones::after {
+    width: 28px;
+    height: 36px;
+    left: 9%;
+    top: 46%;
+    border: 3px solid #14121e;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #1f1f25, #2e2b4b);
+    box-shadow:
+        inset 0 0 0 2px rgba(0, 0, 0, 0.08),
+        0 4px 10px rgba(0, 0, 0, 0.35),
+        92px 0 0 0 #1f1f25,
+        92px 0 12px 0 rgba(0, 0, 0, 0.35);
+}
+
+.acc-star::before {
+    content: "★";
+    font-size: 30px;
+    color: #ffd76f;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.22));
+}
+
+.acc-headband::before {
+    content: "";
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    width: 90%;
+    height: 18px;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, #ffb8d9, #b39ddb);
+    border-radius: 14px;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.6),
+        0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.acc-flower::before {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background:
+        radial-gradient(circle at 50% 50%, #ffd6e8 40%, #ff9ac9 60%),
+        radial-gradient(circle at 50% 50%, #ffeef7 55%, transparent 60%);
+    border-radius: 50%;
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.18),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+/* =====================================================
+     FORMULÁRIO
+     ===================================================== */
+
+.avatar-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.option-group h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    border: 2px solid var(--border-soft);
+    font-size: 1rem;
+}
+
+input[type="color"] {
+    width: 48px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Opções */
+.options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.options button {
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 2px solid var(--border-soft);
+    background: var(--white);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.options button:hover {
+    border-color: var(--purple-soft);
+}
+
+/* Botões */
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 18px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, var(--pink-soft), var(--purple-soft));
+    color: #fff;
+    border: none;
+}
+
+.btn.secondary {
+    background: #f3f3f7;
+    color: var(--text-main);
+}
+
+/* =====================================================
+     HOME / SALAS
+     ===================================================== */
+
+.home {
+    text-align: center;
+    padding: 12px 20px 36px;
+}
+
+.home h1 {
+    font-size: 1.6rem;
+    color: var(--text-main);
+    margin-bottom: 16px;
+}
+
+.rooms {
+    display: grid;
+    gap: 14px;
+    max-width: 420px;
+    margin: 0 auto 20px;
+}
+
+.room-card {
+    display: block;
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--pink-soft), var(--purple-soft));
+    color: #fff;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.room-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
+}
+
+.home .actions {
+    flex-direction: column;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+/* =====================================================
+     CHAT
+     ===================================================== */
+
+.chat {
+    max-width: 760px;
+    margin: 0 auto 32px;
+    padding: 0 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.chat h1 {
+    text-align: center;
+    font-size: 1.4rem;
+    margin-top: 4px;
+}
+
+.room-occupancy {
+    text-align: center;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+.chat-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.room-participants {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.participant-seat {
+    position: absolute;
+    width: 88px;
+    height: 88px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.18));
+}
+
+.participant-seat .avatar-circle.small {
+    width: 72px;
+    height: 72px;
+}
+
+.avatar-circle.small {
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-circle.small .hair {
+    width: 96px;
+    height: 56px;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.62);
+    transform-origin: top center;
+}
+
+.avatar-circle.small .accessory {
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.68);
+    transform-origin: center;
+}
+
+.avatar-circle.small .eyes {
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+    gap: 10px;
+}
+
+.avatar-circle.small .mouth {
+    position: absolute;
+    top: 46px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.82);
+}
+
+.avatar-circle.small .clothes {
+    width: 110%;
+    height: 34px;
+    bottom: -6px;
+    left: -5%;
+    border-radius: 45% 45% 55% 55%;
+    transform: scale(0.74);
+    transform-origin: center;
+}
+
+.participant-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.seat-top-left {
+    top: 12px;
+    left: 12px;
+}
+
+.seat-top-right {
+    top: 12px;
+    right: 12px;
+}
+
+.seat-bottom-left {
+    bottom: 12px;
+    left: 12px;
+}
+
+.seat-bottom-right {
+    bottom: 12px;
+    right: 12px;
+}
+
+.music-share {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.music-share input[type="url"] {
+    padding: 12px;
+    border-radius: 14px;
+    border: 2px solid var(--border-soft);
+    font-size: 1rem;
+}
+
+.helper-text {
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.55);
+}
+
+/* =====================================================
+     ANIMAÇÕES SUAVES
+     ===================================================== */
+
+@keyframes breathe {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.015);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    95%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    96%,
+    99% {
+        transform: scaleY(0.1);
+    }
+}
+
+.eyes::before,
+.eyes::after {
+    animation: blink 6s infinite;
+    transform-origin: center;
+}
+
+/* =====================================================
+     CHAT / MENSAGENS
+     ===================================================== */
+
+.messages {
+    background: #fff;
+    border-radius: 18px;
+    padding: 14px;
+    min-height: 320px;
+    max-height: 520px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    box-shadow: inset 0 0 0 1px #E6E6EB;
+}
+
+.message {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.message strong {
+    color: #B39DDB;
+}
+
+.chat-form {
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.chat-form input {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    border: 2px solid #E6E6EB;
+}
+
+.chat-form button {
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #F7A8C8, #B39DDB);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.voice-message {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.voice-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.voice-timer {
+    font-variant-numeric: tabular-nums;
+    color: #7B6CFF;
+}
+
+.voice-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.voice-message .btn {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+}
+
+.voice-btn {
+    background: #1F1F25;
+    color: #fff;
+}
+
+#voicePreview {
+    width: 100%;
+    margin-top: 4px;
+    border-radius: 12px;
+}

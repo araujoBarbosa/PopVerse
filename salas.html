@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Salas – PopVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#B39DDB">
+
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+    <!-- TOPO COM AVATAR -->
+    <header class="topbar">
+        <div class="user-card">
+            <div class="avatar-circle small" id="userAvatar">
+                <div class="hair hair-short" id="userHair"></div>
+                <div class="accessory" id="userAccessory"></div>
+                <div class="eyes" id="userEyes"></div>
+                <div class="mouth" id="userMouth"></div>
+                <div class="clothes" id="userClothes"></div>
+            </div>
+            <span class="user-name" id="userName">Avatar</span>
+        </div>
+    </header>
+
+    <!-- SALAS -->
+    <main class="home">
+        <h1>Escolha uma sala 🎶</h1>
+
+        <div class="rooms">
+            <a href="./sala.html?room=K-pop Geral" class="room-card">🎤 K-pop Geral</a>
+            <a href="./sala.html?room=BTS" class="room-card">💖 BTS</a>
+            <a href="./sala.html?room=BLACKPINK" class="room-card">🖤 BLACKPINK</a>
+            <a href="./sala.html?room=Novos Amigos" class="room-card">🌟 Novos Amigos</a>
+        </div>
+
+        <div class="actions">
+            <a href="./avatar.html" class="btn secondary">Editar avatar</a>
+        </div>
+    </main>
+
+    <script src="./js/salas.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("./sw.js");
+        }
+    </script>
+</body>
+
+</html>

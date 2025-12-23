@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Modo Responsável – PopVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#B39DDB">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+    <main class="home">
+        <h1>Modo Responsável 👨‍👩‍👧</h1>
+        <p>Área exclusiva para pais ou responsáveis</p>
+
+        <form id="parentForm" class="avatar-form">
+            <label>
+                Criar / Digitar PIN
+                <input type="password" id="parentPin" maxlength="4" required placeholder="4 dígitos">
+            </label>
+
+            <button type="submit" class="btn primary">Entrar</button>
+            <a href="./index.html" class="btn secondary">Voltar</a>
+        </form>
+
+        <div id="parentPanel" style="display:none;">
+            <h2>Configurações</h2>
+
+            <button class="btn secondary" id="resetChat">Limpar conversas</button>
+            <button class="btn secondary" id="resetAvatar">Resetar avatar</button>
+
+            <label>
+                Faixa etária
+                <select id="parentAge">
+                    <option value="kids">Até 8 anos</option>
+                    <option value="tween">9 a 11 anos</option>
+                    <option value="teen">12+</option>
+                </select>
+            </label>
+
+            <button class="btn primary" id="saveParent">Salvar configurações</button>
+        </div>
+    </main>
+
+    <script src="./js/responsavel.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("./sw.js");
+        }
+    </script>
+</body>
+
+</html>

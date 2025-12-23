@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Criar Avatar – PopVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#B39DDB">
+
+    <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+
+    <main class="avatar-page">
+
+        <section class="avatar-card">
+
+            <!-- TÍTULO -->
+            <h1 class="avatar-title">Crie seu avatar 🎨</h1>
+            <p class="avatar-subtitle">
+                Personalize seu personagem do PopVerse
+            </p>
+
+            <!-- PREVIEW DO AVATAR -->
+            <div class="avatar-preview">
+                <div class="avatar-circle" id="avatarCircle">
+                    <div class="avatar-light"></div>
+                    <div class="avatar-vignette"></div>
+
+                    <div class="avatar-head">
+                        <div class="hair hair-short" id="hair"></div>
+
+                        <div class="face">
+                            <div class="eyes" id="eyes"></div>
+                            <div class="mouth" id="mouth"></div>
+                        </div>
+
+                        <div class="accessory" id="accessory"></div>
+                    </div>
+
+                    <div class="clothes" id="clothes"></div>
+                </div>
+                <span class="avatar-name" id="avatarName">Seu nome</span>
+            </div>
+
+            <!-- FORMULÁRIO -->
+            <form class="avatar-form">
+
+                <!-- NOME -->
+                <div class="option-group">
+                    <h3>👤 Nome</h3>
+                    <input type="text" id="nameInput" placeholder="Ex: StarGirl" maxlength="12" required />
+                </div>
+
+                <!-- COR DO AVATAR -->
+                <div class="option-group">
+                    <h3>🎨 Cor do rosto</h3>
+                    <input type="color" id="colorInput" value="#F7A8C8" />
+                </div>
+
+                <!-- CABELO -->
+                <div class="option-group">
+                    <h3>💇 Cabelo</h3>
+                    <div class="options hair-options">
+                        <button type="button" data-hair="hair-short">Curto</button>
+                        <button type="button" data-hair="hair-fringe">Franja</button>
+                        <button type="button" data-hair="hair-long">Longo</button>
+                        <button type="button" data-hair="hair-bun">Coque</button>
+                        <button type="button" data-hair="hair-wavy">Ondulado</button>
+                        <button type="button" data-hair="hair-pony">Rabo de cavalo</button>
+                        <button type="button" data-hair="hair-mohawk">Moicano</button>
+                        <button type="button" data-hair="hair-braids">Tranças</button>
+                        <button type="button" data-hair="hair-curly">Cacheado</button>
+                        <button type="button" data-hair="hair-bob">Chanel</button>
+                    </div>
+                </div>
+
+                <!-- COR DO CABELO -->
+                <div class="option-group">
+                    <h3>🎨 Cor do cabelo</h3>
+                    <input type="color" id="hairColorInput" value="#1F1F1F" />
+                </div>
+
+                <!-- OLHOS -->
+                <div class="option-group">
+                    <h3>👀 Olhos</h3>
+                    <div class="options eyes-options">
+                        <button type="button" data-eyes="eyes-1">🙂</button>
+                        <button type="button" data-eyes="eyes-2">😄</button>
+                        <button type="button" data-eyes="eyes-3">😌</button>
+                        <button type="button" data-eyes="eyes-4">✨</button>
+                        <button type="button" data-eyes="eyes-5">😴</button>
+                        <button type="button" data-eyes="eyes-6">👾</button>
+                        <button type="button" data-eyes="eyes-7">😼</button>
+                        <button type="button" data-eyes="eyes-8">🌟</button>
+                        <button type="button" data-eyes="eyes-9">😍</button>
+                        <button type="button" data-eyes="eyes-10">⭐</button>
+                        <button type="button" data-eyes="eyes-11">🥺</button>
+                        <button type="button" data-eyes="eyes-mentor">🧙</button>
+                        <button type="button" data-eyes="eyes-confident">😎</button>
+                        <button type="button" data-eyes="eyes-rebel">😈</button>
+                        <button type="button" data-eyes="eyes-smart">🧠</button>
+                        <button type="button" data-eyes="eyes-friendly">🫂</button>
+                    </div>
+                </div>
+
+                <!-- BOCA -->
+                <div class="option-group">
+                    <h3>🙂 Boca</h3>
+                    <div class="options mouth-options">
+                        <button type="button" data-mouth="mouth-1">🙂</button>
+                        <button type="button" data-mouth="mouth-2">😄</button>
+                        <button type="button" data-mouth="mouth-3">😮</button>
+                        <button type="button" data-mouth="mouth-4">😉</button>
+                        <button type="button" data-mouth="mouth-5">😁</button>
+                        <button type="button" data-mouth="mouth-6">😈</button>
+                        <button type="button" data-mouth="mouth-7">😐</button>
+                        <button type="button" data-mouth="mouth-8">🦇</button>
+                        <button type="button" data-mouth="mouth-9">🤩</button>
+                        <button type="button" data-mouth="mouth-10">😃</button>
+                        <button type="button" data-mouth="mouth-11">😺</button>
+                        <button type="button" data-mouth="mouth-mentor">🧙</button>
+                        <button type="button" data-mouth="mouth-confident">😎</button>
+                        <button type="button" data-mouth="mouth-rebel">😈</button>
+                        <button type="button" data-mouth="mouth-smart">🧠</button>
+                        <button type="button" data-mouth="mouth-friendly">🫂</button>
+                    </div>
+                </div>
+
+                <!-- ROSTOS RÁPIDOS -->
+                <div class="option-group">
+                    <h3>😀 Rostos rápidos</h3>
+                    <div class="options face-options">
+                        <button type="button" data-face="mentor">🧙 Mentor</button>
+                        <button type="button" data-face="confident">😎 Confiante</button>
+                        <button type="button" data-face="rebel">😈 Rebelde</button>
+                        <button type="button" data-face="smart">🧠 Inteligente</button>
+                        <button type="button" data-face="friendly">🫂 Amigável</button>
+                    </div>
+                </div>
+
+                <!-- ROUPA -->
+                <div class="option-group">
+                    <h3>👕 Roupa</h3>
+                    <div class="options clothes-options">
+                        <button type="button" data-clothes="clothes-1">👕</button>
+                        <button type="button" data-clothes="clothes-2">🧥</button>
+                        <button type="button" data-clothes="clothes-3">👚</button>
+                        <button type="button" data-clothes="clothes-4">🧢</button>
+                        <button type="button" data-clothes="clothes-5">🎮</button>
+                        <button type="button" data-clothes="clothes-6">🛡️</button>
+                        <button type="button" data-clothes="clothes-7">🧬</button>
+                        <button type="button" data-clothes="clothes-8">🧥✨</button>
+                        <button type="button" data-clothes="clothes-9">⚡</button>
+                        <button type="button" data-clothes="clothes-10">🧸</button>
+                        <button type="button" data-clothes="clothes-11">🎀</button>
+                    </div>
+                </div>
+
+                <!-- ACESSÓRIOS -->
+                <div class="option-group">
+                    <h3>🎀 Acessórios</h3>
+                    <div class="options accessory-options">
+                        <button type="button" data-accessory="">🚫</button>
+                        <button type="button" data-accessory="acc-glasses">🕶️</button>
+                        <button type="button" data-accessory="acc-bow">🎀</button>
+                        <button type="button" data-accessory="acc-cap">🧢</button>
+                        <button type="button" data-accessory="acc-headphones">🎧</button>
+                        <button type="button" data-accessory="acc-star">⭐</button>
+                        <button type="button" data-accessory="acc-visor">🪩</button>
+                        <button type="button" data-accessory="acc-mask">😷</button>
+                        <button type="button" data-accessory="acc-crown">👑</button>
+                        <button type="button" data-accessory="acc-halo">✨</button>
+                        <button type="button" data-accessory="acc-earrings">💎</button>
+                        <button type="button" data-accessory="acc-headband">🎗️</button>
+                        <button type="button" data-accessory="acc-flower">🌸</button>
+                    </div>
+                </div>
+
+                <!-- IDADE -->
+                <div class="option-group">
+                    <h3>📅 Minha idade</h3>
+                    <select id="ageGroup" required>
+                        <option value="">Escolha</option>
+                        <option value="kids">Até 8 anos</option>
+                        <option value="tween">9 a 11 anos</option>
+                        <option value="teen">12 anos ou mais</option>
+                    </select>
+                </div>
+
+                <!-- AÇÕES -->
+                <div class="actions">
+                    <button type="submit" class="btn primary">Salvar avatar</button>
+                    <a href="./index.html" class="btn secondary">Voltar</a>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <script src="./js/avatar.js"></script>
+</body>
+
+</html>

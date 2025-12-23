@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PopVerse</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/favicon.svg">
+    <meta name="theme-color" content="#B39DDB">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="logo-card">
+            <img src="./assets/img/popverse-logo.svg" alt="PopVerse" class="logo">
+        </div>
+    </header>
+
+    <main class="home">
+        <h1>Bem-vindo ao PopVerse ✨</h1>
+        <p>
+            Um universo para fazer amigos, conversar
+            e se divertir com música.
+        </p>
+        <div class="actions">
+            <button class="btn primary">Entrar</button>
+            <a href="./avatar.html" class="btn secondary">Criar avatar</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>PopVerse • PWA em construção • Feito para fãs</p>
+    </footer>
+
+    <a href="./responsavel.html"
+        style="font-size:0.8rem; opacity:.7; display:block; text-align:center; margin-bottom:16px;">Área dos
+        responsáveis</a>
+
+    <script src="js/app.js"></script>
+    <script src="js/avatar.js"></script>
+    <script src="js/rooms.js"></script>
+    <script src="js/chat.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("./sw.js");
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sala – PopVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#B39DDB">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+    <!-- TOPO -->
+    <header class="topbar chat-topbar">
+        <div class="user-card">
+            <div class="avatar-circle small" id="chatAvatar">
+                <div class="hair hair-short" id="chatHair"></div>
+                <div class="accessory" id="chatAccessory"></div>
+                <div class="eyes" id="chatEyes"></div>
+                <div class="mouth" id="chatMouth"></div>
+                <div class="clothes" id="chatClothes"></div>
+            </div>
+            <span class="user-name" id="chatUser">Avatar</span>
+        </div>
+    </header>
+
+    <!-- CHAT -->
+    <main class="chat">
+        <h1 id="roomTitle">Sala</h1>
+        <div class="room-occupancy" id="roomOccupancy"></div>
+
+        <section class="chat-stage">
+            <div class="room-participants" id="roomParticipants"></div>
+
+            <div class="messages" id="messages"></div>
+
+            <form class="chat-form" id="chatForm">
+                <input type="text" id="chatInput" placeholder="Escreva aqui" maxlength="200" aria-label="Mensagem" />
+                <button type="submit">Enviar</button>
+            </form>
+
+            <div class="voice-message" id="voiceMessage">
+                <div class="voice-status">
+                    <span id="voiceStatus">Grave uma mensagem de voz</span>
+                    <span class="voice-timer" id="voiceTimer">00:00</span>
+                </div>
+                <div class="voice-controls">
+                    <button type="button" class="btn voice-btn" id="voiceRecord">🎙️ Gravar voz</button>
+                    <button type="button" class="btn secondary" id="voiceCancel" disabled>Cancelar</button>
+                    <button type="button" class="btn primary" id="voiceSend" disabled>Enviar voz</button>
+                </div>
+                <audio id="voicePreview" controls style="display:none"
+                    aria-label="Prévia da sua mensagem de voz"></audio>
+                <small class="helper-text">Grave até 60 segundos. Vamos pedir a permissão do microfone.</small>
+            </div>
+
+            <div class="music-share">
+                <input type="url" id="musicInput" placeholder="Cole um link do Spotify ou YouTube"
+                    aria-label="Link de música" />
+                <button type="button" class="btn primary" id="musicSend">Compartilhar música</button>
+                <small class="helper-text">Use links públicos e seguros.</small>
+            </div>
+        </section>
+
+        <a href="./salas.html" class="btn secondary">Voltar</a>
+    </main>
+
+    <script src="./js/sala.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("./sw.js");
+        }
+    </script>
+</body>
+
+</html>

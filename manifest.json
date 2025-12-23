@@ -1,0 +1,18 @@
+{
+    "name": "PopVerse",
+    "short_name": "PopVerse",
+    "description": "Um universo pop para fazer amigos e se divertir",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#F7A8C8",
+    "theme_color": "#B39DDB",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "./assets/icons/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
