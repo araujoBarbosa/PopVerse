@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 import { getSalaId } from "./utils.js";
 import {
     collection,
@@ -8,6 +8,7 @@ import {
     onSnapshot,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { enviarMensagem, escutarMensagens } from "./chat.js";
 import { escutarRanking } from "./ranking.js";
 import { calcularNivel } from "./levels.js";
@@ -53,15 +54,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     let lastVoiceBlob;
     let lastVoiceBlobUrl = "";
     let lastVoiceDuration = 0;
-
-    function ensureUserId() {
-        let id = localStorage.getItem("popverseUserId");
-        if (!id) {
-            id = `user-${Math.random().toString(36).slice(2)}-${Date.now()}`;
-            localStorage.setItem("popverseUserId", id);
-        }
-        return id;
-    }
 
     function applyClass(el, base, extra) {
         if (!el) return;
@@ -297,208 +289,221 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (clothesVariant) applyClass(chatClothes, "clothes", clothesVariant);
     applyClass(chatAccessory, "accessory", accessoryVariant || "");
 
-    const userId = localStorage.getItem("userId") || crypto.randomUUID();
-    localStorage.setItem("userId", userId);
-    const me = cloneAvatarData(avatar, { name: avatar.name || "Você", id: userId });
+    let salaIniciada = false;
 
-    const roomName = salaId;
-    const roomKey = `popverseRoomParticipants_${roomName}`;
-    const roomId = salaId;
+    onAuthStateChanged(auth, user => {
+        if (user && !salaIniciada) {
+            salaIniciada = true;
+            window.userId = user.uid; // 🔥 ID ÚNICO REAL
+            iniciarSala(user.uid);
+        }
+    });
 
-    function loadRoomParticipants() {
-        try {
-            const stored = JSON.parse(localStorage.getItem(roomKey) || "[]");
-            if (Array.isArray(stored)) return stored;
-        } catch (err) {
+    signInAnonymously(auth).catch(err => {
+        console.error("Falha ao autenticar anonimamente", err);
+    });
+
+    async function iniciarSala(userId) {
+        const me = cloneAvatarData(avatar, { name: avatar.name || "Você", id: userId });
+
+        const roomName = salaId;
+        const roomKey = `popverseRoomParticipants_${roomName}`;
+
+        function loadRoomParticipants() {
+            try {
+                const stored = JSON.parse(localStorage.getItem(roomKey) || "[]");
+                if (Array.isArray(stored)) return stored;
+            } catch (err) {
+                return [];
+            }
             return [];
         }
-        return [];
-    }
 
-    function saveRoomParticipants(list) {
-        localStorage.setItem(roomKey, JSON.stringify(list));
-    }
-
-    function upsertParticipant(list, participant) {
-        const idx = list.findIndex(p => p.id && participant.id && p.id === participant.id);
-        if (idx >= 0) {
-            list[idx] = participant;
-        } else {
-            list.push(participant);
+        function saveRoomParticipants(list) {
+            localStorage.setItem(roomKey, JSON.stringify(list));
         }
-        return list;
-    }
 
-    const initialRoomParticipants = upsertParticipant(loadRoomParticipants(), { ...me, id: userId });
-    saveRoomParticipants(initialRoomParticipants);
-
-    function renderRoomFromStorage() {
-        const all = loadRoomParticipants();
-        const guests = all.filter(p => p.id !== userId).map(data => cloneAvatarData(data));
-        const orderedParticipants = [me, ...guests].slice(0, 4);
-        renderParticipants(orderedParticipants);
-    }
-
-    renderRoomFromStorage();
-
-    window.addEventListener("storage", evt => {
-        if (evt.key === roomKey) {
-            renderRoomFromStorage();
+        function upsertParticipant(list, participant) {
+            const idx = list.findIndex(p => p.id && participant.id && p.id === participant.id);
+            if (idx >= 0) {
+                list[idx] = participant;
+            } else {
+                list.push(participant);
+            }
+            return list;
         }
-    });
 
-    // Presença em tempo real (Firestore)
-    const onlineCountEl = document.getElementById("onlineCount");
-    const presencaRef = doc(db, "salas", salaId, "presencas", userId);
-    const listaRef = collection(db, "salas", salaId, "presencas");
+        const initialRoomParticipants = upsertParticipant(loadRoomParticipants(), { ...me, id: userId });
+        saveRoomParticipants(initialRoomParticipants);
 
-    async function enterPresence() {
-        try {
-            await setDoc(
-                presencaRef,
-                {
-                    id: userId,
-                    online: true,
-                    entrouEm: serverTimestamp(),
-                    nome: avatar.name || "Você",
-                    skinColor: avatar.skinColor || "#F7A8C8",
-                    hairVariant,
-                    eyesVariant,
-                    mouthVariant,
-                    clothesVariant,
-                    accessoryVariant,
-                    hairColor: avatar.hairColor || "#1F1F1F"
-                },
-                { merge: true }
-            );
-        } catch (err) {
-            console.error("Falha ao registrar presença", err);
+        function renderRoomFromStorage() {
+            const all = loadRoomParticipants();
+            const guests = all.filter(p => p.id !== userId).map(data => cloneAvatarData(data));
+            const orderedParticipants = [me, ...guests].slice(0, 4);
+            renderParticipants(orderedParticipants);
         }
-    }
 
-    async function leavePresence() {
-        try {
-            await deleteDoc(presencaRef);
-        } catch (err) {
-            // já removido ou offline; ignore
-        }
-    }
+        renderRoomFromStorage();
 
-    await enterPresence();
-
-    function presenceToParticipant(docSnap) {
-        const data = docSnap.data() || {};
-        return cloneAvatarData({
-            id: data.id || docSnap.id,
-            name: data.nome || data.name || "Amigo",
-            skinColor: data.skinColor,
-            hairVariant: data.hairVariant || data.hairStyleVariant,
-            eyesVariant: data.eyesVariant || data.eyesStyleVariant,
-            mouthVariant: data.mouthVariant || data.mouthStyleVariant,
-            clothesVariant: data.clothesVariant || data.clothesStyleVariant,
-            accessoryVariant: data.accessoryVariant || data.accessoryStyleVariant,
-            hairColor: data.hairColor
-        });
-    }
-
-    onSnapshot(listaRef, snapshot => {
-        const participants = [];
-        snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            if (data && data.online === false) return;
-            participants.push(presenceToParticipant(docSnap));
-        });
-
-        const ordered = participants
-            .sort((a, b) => {
-                if (a.id === userId) return -1;
-                if (b.id === userId) return 1;
-                return (a.name || "").localeCompare(b.name || "");
-            })
-            .slice(0, 4);
-
-        renderParticipants(ordered.length ? ordered : [me]);
-
-        if (onlineCountEl) onlineCountEl.textContent = String(participants.length);
-        if (occupancyEl) occupancyEl.textContent = `${participants.length}/4`;
-    });
-
-    function removeSelfFromRoom() {
-        const remaining = loadRoomParticipants().filter(p => p.id !== userId);
-        saveRoomParticipants(remaining);
-    }
-
-    window.addEventListener("beforeunload", () => {
-        removeSelfFromRoom();
-        leavePresence();
-    });
-
-    // Nome da sala pela URL
-    const roomTitle = document.getElementById("roomTitle");
-    if (roomTitle) roomTitle.textContent = roomName;
-
-    const messages = document.getElementById("messages");
-    const chatList = document.getElementById("chatMensagens");
-    const rankingList = document.getElementById("ranking");
-    if (btnGoogle) {
-        btnGoogle.addEventListener("click", () => converterParaGoogle());
-    }
-
-    if (musicSend && musicInput && messages) {
-        musicSend.addEventListener("click", () => {
-            const link = musicInput.value.trim();
-            if (!link) return;
-
-            const safeText = link.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const anchor = link.startsWith("http://") || link.startsWith("https://")
-                ? `<a href="${safeText}" target="_blank" rel="noopener noreferrer">${safeText}</a>`
-                : safeText;
-
-            appendMessage(`<strong>${sanitizeText(avatar.name || "Você")}:</strong> 🎵 ${anchor}`);
-            musicInput.value = "";
-        });
-    }
-
-    if (chatForm && chatInput && chatList) {
-        chatForm.addEventListener("submit", async e => {
-            e.preventDefault();
-            await enviarMensagem(chatInput.value || "");
-            chatInput.value = "";
-            chatInput.focus();
-        });
-
-        escutarMensagens(async (mensagens, meuId) => {
-            chatList.innerHTML = "";
-            for (const m of mensagens) {
-                const li = document.createElement("li");
-                li.className = m.uid === meuId ? "me" : "other";
-
-                const avatar = await carregarAvatar(m.uid);
-                const imgSrc = avatar ? `avatars/${avatar}` : "avatars/default.png";
-
-                li.innerHTML = `
-                    <img src="${imgSrc}" class="chat-avatar" alt="avatar">
-                    <span>${m.texto || ""}</span>
-                `;
-                chatList.appendChild(li);
+        window.addEventListener("storage", evt => {
+            if (evt.key === roomKey) {
+                renderRoomFromStorage();
             }
         });
-    }
 
-    if (rankingList) {
-        escutarRanking(lista => {
-            rankingList.innerHTML = "";
-            lista.forEach((u, i) => {
-                const { nivel, titulo } = calcularNivel(u.xp || 0);
-                const li = document.createElement("li");
-                const imgSrc = u.avatar ? `avatars/${u.avatar}` : "avatars/default.png";
-                li.innerHTML = `
-                    <img src="${imgSrc}" class="chat-avatar" alt="avatar">
-                    <span>#${i + 1} — Nível ${nivel} (${titulo}) — XP: ${u.xp || 0}</span>
-                `;
-                rankingList.appendChild(li);
+        // Presença em tempo real (Firestore)
+        const onlineCountEl = document.getElementById("onlineCount");
+        const presencaRef = doc(db, "salas", salaId, "presencas", userId);
+        const listaRef = collection(db, "salas", salaId, "presencas");
+
+        async function enterPresence() {
+            try {
+                await setDoc(
+                    presencaRef,
+                    {
+                        id: userId,
+                        online: true,
+                        entrouEm: serverTimestamp(),
+                        nome: avatar.name || "Você",
+                        skinColor: avatar.skinColor || "#F7A8C8",
+                        hairVariant,
+                        eyesVariant,
+                        mouthVariant,
+                        clothesVariant,
+                        accessoryVariant,
+                        hairColor: avatar.hairColor || "#1F1F1F"
+                    },
+                    { merge: true }
+                );
+            } catch (err) {
+                console.error("Falha ao registrar presença", err);
+            }
+        }
+
+        async function leavePresence() {
+            try {
+                await deleteDoc(presencaRef);
+            } catch (err) {
+                // já removido ou offline; ignore
+            }
+        }
+
+        await enterPresence();
+
+        function presenceToParticipant(docSnap) {
+            const data = docSnap.data() || {};
+            return cloneAvatarData({
+                id: data.id || docSnap.id,
+                name: data.nome || data.name || "Amigo",
+                skinColor: data.skinColor,
+                hairVariant: data.hairVariant || data.hairStyleVariant,
+                eyesVariant: data.eyesVariant || data.eyesStyleVariant,
+                mouthVariant: data.mouthVariant || data.mouthStyleVariant,
+                clothesVariant: data.clothesVariant || data.clothesStyleVariant,
+                accessoryVariant: data.accessoryVariant || data.accessoryStyleVariant,
+                hairColor: data.hairColor
             });
+        }
+
+        onSnapshot(listaRef, snapshot => {
+            const participants = [];
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                if (data && data.online === false) return;
+                participants.push(presenceToParticipant(docSnap));
+            });
+
+            const ordered = participants
+                .sort((a, b) => {
+                    if (a.id === userId) return -1;
+                    if (b.id === userId) return 1;
+                    return (a.name || "").localeCompare(b.name || "");
+                })
+                .slice(0, 4);
+
+            renderParticipants(ordered.length ? ordered : [me]);
+
+            if (onlineCountEl) onlineCountEl.textContent = String(participants.length);
+            if (occupancyEl) occupancyEl.textContent = `${participants.length}/4`;
         });
+
+        function removeSelfFromRoom() {
+            const remaining = loadRoomParticipants().filter(p => p.id !== userId);
+            saveRoomParticipants(remaining);
+        }
+
+        window.addEventListener("beforeunload", () => {
+            removeSelfFromRoom();
+            leavePresence();
+        });
+
+        // Nome da sala pela URL
+        const roomTitle = document.getElementById("roomTitle");
+        if (roomTitle) roomTitle.textContent = roomName;
+
+        const messages = document.getElementById("messages");
+        const chatList = document.getElementById("chatMensagens");
+        const rankingList = document.getElementById("ranking");
+        if (btnGoogle) {
+            btnGoogle.addEventListener("click", () => converterParaGoogle());
+        }
+
+        if (musicSend && musicInput && messages) {
+            musicSend.addEventListener("click", () => {
+                const link = musicInput.value.trim();
+                if (!link) return;
+
+                const safeText = link.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const anchor = link.startsWith("http://") || link.startsWith("https://")
+                    ? `<a href="${safeText}" target="_blank" rel="noopener noreferrer">${safeText}</a>`
+                    : safeText;
+
+                appendMessage(`<strong>${sanitizeText(avatar.name || "Você")}:</strong> 🎵 ${anchor}`);
+                musicInput.value = "";
+            });
+        }
+
+        if (chatForm && chatInput && chatList) {
+            chatForm.addEventListener("submit", async e => {
+                e.preventDefault();
+                await enviarMensagem(chatInput.value || "");
+                chatInput.value = "";
+                chatInput.focus();
+            });
+
+            escutarMensagens(async (mensagens, meuId) => {
+                chatList.innerHTML = "";
+                for (const m of mensagens) {
+                    const li = document.createElement("li");
+                    li.className = m.uid === meuId ? "me" : "other";
+
+                    const avatar = await carregarAvatar(m.uid);
+                    const imgSrc = avatar ? `avatars/${avatar}` : "avatars/default.png";
+
+                    li.innerHTML = `
+                        <img src="${imgSrc}" class="chat-avatar" alt="avatar">
+                        <span>${m.texto || ""}</span>
+                    `;
+                    chatList.appendChild(li);
+                }
+            });
+        }
+
+        if (rankingList) {
+            escutarRanking(lista => {
+                rankingList.innerHTML = "";
+                lista.forEach((u, i) => {
+                    const { nivel, titulo } = calcularNivel(u.xp || 0);
+                    const li = document.createElement("li");
+                    const imgSrc = u.avatar ? `avatars/${u.avatar}` : "avatars/default.png";
+                    li.innerHTML = `
+                        <img src="${imgSrc}" class="chat-avatar" alt="avatar">
+                        <span>#${i + 1} — Nível ${nivel} (${titulo}) — XP: ${u.xp || 0}</span>
+                    `;
+                    rankingList.appendChild(li);
+                });
+            });
+        }
     }
 
     if (voiceRecord) {

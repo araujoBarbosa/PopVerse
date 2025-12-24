@@ -1,4 +1,4 @@
-const CACHE_NAME = "popverse-v1";
+const CACHE_NAME = "popverse-v2";
 const FILES_TO_CACHE = [
     "./",
     "./index.html",
@@ -6,6 +6,7 @@ const FILES_TO_CACHE = [
     "./salas.html",
     "./sala.html",
     "./css/styles.css",
+    "./js/app.js",
     "./js/avatar.js",
     "./js/salas.js",
     "./js/sala.js",
@@ -17,6 +18,14 @@ const FILES_TO_CACHE = [
 self.addEventListener("install", (e) => {
     e.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+    );
+});
+
+self.addEventListener("activate", (e) => {
+    e.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+        )
     );
 });
 
