@@ -354,11 +354,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function enterPresence() {
         try {
-            await setDoc(presencaRef, {
-                online: true,
-                entrouEm: serverTimestamp(),
-                nome: avatar.name || "Você"
-            });
+            await setDoc(
+                presencaRef,
+                {
+                    id: userId,
+                    online: true,
+                    entrouEm: serverTimestamp(),
+                    nome: avatar.name || "Você",
+                    skinColor: avatar.skinColor || "#F7A8C8",
+                    hairVariant,
+                    eyesVariant,
+                    mouthVariant,
+                    clothesVariant,
+                    accessoryVariant,
+                    hairColor: avatar.hairColor || "#1F1F1F"
+                },
+                { merge: true }
+            );
         } catch (err) {
             console.error("Falha ao registrar presença", err);
         }
@@ -374,9 +386,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await enterPresence();
 
+    function presenceToParticipant(docSnap) {
+        const data = docSnap.data() || {};
+        return cloneAvatarData({
+            id: data.id || docSnap.id,
+            name: data.nome || data.name || "Amigo",
+            skinColor: data.skinColor,
+            hairVariant: data.hairVariant || data.hairStyleVariant,
+            eyesVariant: data.eyesVariant || data.eyesStyleVariant,
+            mouthVariant: data.mouthVariant || data.mouthStyleVariant,
+            clothesVariant: data.clothesVariant || data.clothesStyleVariant,
+            accessoryVariant: data.accessoryVariant || data.accessoryStyleVariant,
+            hairColor: data.hairColor
+        });
+    }
+
     onSnapshot(listaRef, snapshot => {
-        const total = snapshot.size;
-        if (onlineCountEl) onlineCountEl.textContent = String(total);
+        const participants = [];
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data && data.online === false) return;
+            participants.push(presenceToParticipant(docSnap));
+        });
+
+        const ordered = participants
+            .sort((a, b) => {
+                if (a.id === userId) return -1;
+                if (b.id === userId) return 1;
+                return (a.name || "").localeCompare(b.name || "");
+            })
+            .slice(0, 4);
+
+        renderParticipants(ordered.length ? ordered : [me]);
+
+        if (onlineCountEl) onlineCountEl.textContent = String(participants.length);
+        if (occupancyEl) occupancyEl.textContent = `${participants.length}/4`;
     });
 
     function removeSelfFromRoom() {
