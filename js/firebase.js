@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -15,6 +16,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 // Login anônimo disparado sem usar top-level await (evita travar browsers que não suportam)
 export async function ensureAnonymousAuth() {

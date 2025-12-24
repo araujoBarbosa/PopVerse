@@ -14,7 +14,7 @@ import {
 const salaId = getSalaId();
 const mensagensRef = collection(db, "salas", salaId, "mensagens");
 
-export async function enviarMensagem(texto) {
+export async function enviarMensagem(texto, nome) {
     if (!texto || !texto.trim()) return;
     const uid = auth.currentUser?.uid;
     if (!uid) return;
@@ -23,7 +23,29 @@ export async function enviarMensagem(texto) {
     if (status.ban || status.mute) return;
 
     await addDoc(mensagensRef, {
+        tipo: "texto",
         texto: texto.trim(),
+        nome: nome || null,
+        uid,
+        criadoEm: serverTimestamp()
+    });
+
+    await addXP(salaId, 5);
+}
+
+export async function enviarMensagemVoz(audioUrl, duracaoMs, nome) {
+    if (!audioUrl) return;
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+
+    const status = await checarModeracao(salaId, uid);
+    if (status.ban || status.mute) return;
+
+    await addDoc(mensagensRef, {
+        tipo: "voz",
+        audioUrl,
+        duracaoMs: typeof duracaoMs === "number" ? duracaoMs : null,
+        nome: nome || null,
         uid,
         criadoEm: serverTimestamp()
     });

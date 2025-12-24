@@ -1,4 +1,4 @@
-import { db, auth, ensureAnonymousAuth } from "./firebase.js";
+import { db, auth, ensureAnonymousAuth, storage } from "./firebase.js";
 import { getSalaId } from "./utils.js";
 import {
     collection,
@@ -8,8 +8,9 @@ import {
     onSnapshot,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { enviarMensagem, escutarMensagens } from "./chat.js";
+import { enviarMensagem, enviarMensagemVoz, escutarMensagens } from "./chat.js";
 import { escutarRanking } from "./ranking.js";
 import { calcularNivel } from "./levels.js";
 import { carregarAvatar } from "./avatar-store.js";
@@ -428,7 +429,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 chatInput.focus();
 
                 try {
-                    await enviarMensagem(texto);
+                    await enviarMensagem(texto, avatar.name || "");
                 } catch (err) {
                     console.error("Falha ao enviar mensagem", err);
                 }
@@ -440,20 +441,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const li = document.createElement("li");
                     li.className = m.uid === meuId ? "me" : "other";
 
-                    let imgSrc = "avatars/default.png";
-                    try {
-                        const avatar = await carregarAvatar(m.uid);
-                        if (avatar) imgSrc = `avatars/${avatar}`;
-                    } catch (err) {
-                        console.warn("Não foi possível carregar avatar do autor", err);
+                    const authorLabel = sanitizeText(m.nome || (m.uid === meuId ? "Você" : "Amigo"));
+
+                    if (m.tipo === "voz" && m.audioUrl) {
+                        const safeUrl = (m.audioUrl || "").replace(/"/g, "%22");
+                        const durationLabel = formatDuration(m.duracaoMs || 0);
+                        li.innerHTML = `
+                                    <strong>${authorLabel}:</strong> 🎤 ${durationLabel}<br>
+                                    <audio controls src="${safeUrl}" preload="metadata"></audio>
+                                `;
+                    } else {
+                        const safeText = sanitizeText(m.texto || "");
+                        li.innerHTML = `<strong>${authorLabel}:</strong> ${safeText}`;
                     }
-
-                    const safeText = sanitizeText(m.texto || "");
-
-                    li.innerHTML = `
-                        <img src="${imgSrc}" class="chat-avatar" alt="avatar">
-                        <span>${safeText}</span>
-                    `;
                     chatList.appendChild(li);
                 }
             });
@@ -465,11 +465,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 lista.forEach((u, i) => {
                     const { nivel, titulo } = calcularNivel(u.xp || 0);
                     const li = document.createElement("li");
-                    const imgSrc = u.avatar ? `avatars/${u.avatar}` : "avatars/default.png";
-                    li.innerHTML = `
-                        <img src="${imgSrc}" class="chat-avatar" alt="avatar">
-                        <span>#${i + 1} — Nível ${nivel} (${titulo}) — XP: ${u.xp || 0}</span>
-                    `;
+                    const nome = sanitizeText(u.nome || u.name || "Amigo");
+                    li.textContent = `#${i + 1} — ${nome} — Nível ${nivel} (${titulo}) — XP: ${u.xp || 0}`;
                     rankingList.appendChild(li);
                 });
             });
@@ -492,11 +489,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (voiceSend) {
-        voiceSend.addEventListener("click", () => {
+        voiceSend.addEventListener("click", async () => {
             if (!lastVoiceBlob) return;
-            const messageUrl = URL.createObjectURL(lastVoiceBlob);
-            appendVoiceMessage(avatar.name || "Você", messageUrl, lastVoiceDuration);
-            resetVoiceUI();
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                if (voiceStatus) voiceStatus.textContent = "Precisa estar logado para enviar voz.";
+                return;
+            }
+
+            try {
+                voiceSend.disabled = true;
+                if (voiceStatus) voiceStatus.textContent = "Enviando áudio...";
+
+                const fileRef = ref(storage, `salas/${salaId}/voz/${currentUser.uid}-${Date.now()}.webm`);
+                await uploadBytes(fileRef, lastVoiceBlob, { contentType: "audio/webm" });
+                const url = await getDownloadURL(fileRef);
+
+                await enviarMensagemVoz(url, lastVoiceDuration, avatar.name || "");
+
+                const durationLabel = formatDuration(lastVoiceDuration || 0);
+                if (voiceStatus) voiceStatus.textContent = "Voz enviada";
+                if (chatList) {
+                    const li = document.createElement("li");
+                    li.className = "me temp";
+                    const safeUrl = (url || "").replace(/"/g, "%22");
+                    li.innerHTML = `
+                        <strong>Você:</strong> 🎤 ${durationLabel}<br>
+                        <audio controls src="${safeUrl}" preload="metadata"></audio>
+                    `;
+                    chatList.appendChild(li);
+                }
+            } catch (err) {
+                console.error("Falha ao enviar voz", err);
+                if (voiceStatus) voiceStatus.textContent = "Não deu para enviar. Tente de novo.";
+            } finally {
+                voiceSend.disabled = false;
+                resetVoiceUI();
+            }
         });
     }
 
