@@ -20,9 +20,19 @@ import { converterParaGoogle } from "./converterConta.js";
 document.addEventListener("DOMContentLoaded", async () => {
     await ensureAnonymousAuth();
 
+    function tryParseAvatar(raw) {
+        if (!raw) return null;
+        try {
+            return JSON.parse(raw);
+        } catch (err) {
+            console.warn("Avatar local inválido, limpando cache", err);
+            localStorage.removeItem("popverseAvatar");
+            return null;
+        }
+    }
+
     async function carregarAvatarSincronizado() {
-        const savedAvatar = localStorage.getItem("popverseAvatar");
-        const avatarLocal = savedAvatar ? JSON.parse(savedAvatar || "{}") : null;
+        const avatarLocal = tryParseAvatar(localStorage.getItem("popverseAvatar"));
 
         // Se já tem local, prioriza ele e apenas tenta replicar para a nuvem em background
         if (avatarLocal) {
@@ -52,7 +62,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    // Garante que o cache local fica consistente mesmo após recuperar da nuvem
+    try {
+        localStorage.setItem("popverseAvatar", JSON.stringify(avatar));
+    } catch (err) {
+        console.warn("Não foi possível reafirmar o avatar no cache local", err);
+    }
+
     const salaId = getSalaId();
+
+    // Sala Geral reidrata do localStorage; demais salas usam o avatar carregado
+    function getCurrentAvatar() {
+        if (salaId === "geral") {
+            return tryParseAvatar(localStorage.getItem("popverseAvatar")) || avatar;
+        }
+        return avatar;
+    }
     const chatUser = document.getElementById("chatUser");
     const chatAvatar = document.getElementById("chatAvatar");
     const chatHair = document.getElementById("chatHair");
@@ -100,11 +125,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             id: overrides.id || base.id || base.userId || "",
             name: overrides.name || base.name || "Amigo",
             skinColor: overrides.skinColor || base.skinColor || "#F7A8C8",
-            hairVariant: overrides.hairVariant || base.hairStyleVariant || pickVariant(base.hairStyle || "", "hair"),
-            eyesVariant: overrides.eyesVariant || base.eyesStyleVariant || pickVariant(base.eyesStyle || "", "eyes"),
-            mouthVariant: overrides.mouthVariant || base.mouthStyleVariant || pickVariant(base.mouthStyle || "", "mouth"),
-            clothesVariant: overrides.clothesVariant || base.clothesStyleVariant || pickVariant(base.clothesStyle || "", "clothes"),
-            accessoryVariant: overrides.accessoryVariant || base.accessoryStyleVariant || pickVariant(base.accessoryStyle || "", "acc"),
+            hairVariant: overrides.hairVariant
+                || base.hairVariant
+                || base.hairStyleVariant
+                || pickVariant(base.hairStyle || "", "hair"),
+            eyesVariant: overrides.eyesVariant
+                || base.eyesVariant
+                || base.eyesStyleVariant
+                || pickVariant(base.eyesStyle || "", "eyes"),
+            mouthVariant: overrides.mouthVariant
+                || base.mouthVariant
+                || base.mouthStyleVariant
+                || pickVariant(base.mouthStyle || "", "mouth"),
+            clothesVariant: overrides.clothesVariant
+                || base.clothesVariant
+                || base.clothesStyleVariant
+                || pickVariant(base.clothesStyle || "", "clothes"),
+            accessoryVariant: overrides.accessoryVariant
+                || base.accessoryVariant
+                || base.accessoryStyleVariant
+                || pickVariant(base.accessoryStyle || "", "acc"),
             hairColor: overrides.hairColor || base.hairColor || "#1F1F1F"
         };
     }
@@ -302,20 +342,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         appendMessage(`<strong>${safeName}:</strong> 🎤 Mensagem de voz (${durationLabel})<br><audio controls src="${audioUrl}" preload="metadata"></audio>`);
     }
 
-    if (chatUser) chatUser.textContent = avatar.name || "Avatar";
-    if (chatAvatar) chatAvatar.style.backgroundColor = avatar.skinColor || "#F7A8C8";
+    function applyChatAvatar(av) {
+        if (!av) return;
+        if (chatUser) chatUser.textContent = av.name || "Avatar";
+        if (chatAvatar) chatAvatar.style.backgroundColor = av.skinColor || "#F7A8C8";
 
-    const hairVariant = avatar.hairStyleVariant || pickVariant(avatar.hairStyle || "", "hair");
-    const eyesVariant = avatar.eyesStyleVariant || pickVariant(avatar.eyesStyle || "", "eyes");
-    const mouthVariant = avatar.mouthStyleVariant || pickVariant(avatar.mouthStyle || "", "mouth");
-    const clothesVariant = avatar.clothesStyleVariant || pickVariant(avatar.clothesStyle || "", "clothes");
-    const accessoryVariant = avatar.accessoryStyleVariant || pickVariant(avatar.accessoryStyle || "", "acc");
+        const hairVariant = av.hairVariant || av.hairStyleVariant || pickVariant(av.hairStyle || "", "hair");
+        const eyesVariant = av.eyesVariant || av.eyesStyleVariant || pickVariant(av.eyesStyle || "", "eyes");
+        const mouthVariant = av.mouthVariant || av.mouthStyleVariant || pickVariant(av.mouthStyle || "", "mouth");
+        const clothesVariant = av.clothesVariant || av.clothesStyleVariant || pickVariant(av.clothesStyle || "", "clothes");
+        const accessoryVariant = av.accessoryVariant || av.accessoryStyleVariant || pickVariant(av.accessoryStyle || "", "acc");
+        const hairColor = av.hairColor || "#1F1F1F";
 
-    if (hairVariant) applyClass(chatHair, "hair", hairVariant);
-    if (eyesVariant) applyClass(chatEyes, "eyes", eyesVariant);
-    if (mouthVariant) applyClass(chatMouth, "mouth", mouthVariant);
-    if (clothesVariant) applyClass(chatClothes, "clothes", clothesVariant);
-    applyClass(chatAccessory, "accessory", accessoryVariant || "");
+        if (hairVariant) applyClass(chatHair, "hair", hairVariant);
+        if (chatHair) chatHair.style.background = `radial-gradient(circle at 30% 20%, rgba(255,255,255,.18) 0%, ${hairColor} 55%, rgba(0,0,0,.55) 140%)`;
+        if (eyesVariant) applyClass(chatEyes, "eyes", eyesVariant);
+        if (mouthVariant) applyClass(chatMouth, "mouth", mouthVariant);
+        if (clothesVariant) applyClass(chatClothes, "clothes", clothesVariant);
+        applyClass(chatAccessory, "accessory", accessoryVariant || "");
+    }
+
+    applyChatAvatar(getCurrentAvatar());
 
     let salaIniciada = false;
 
@@ -331,7 +378,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     ensureAnonymousAuth();
 
     async function iniciarSala(userId) {
-        const me = cloneAvatarData(avatar, { name: avatar.name || "Você", id: userId });
+        const baseAv = getCurrentAvatar();
+        const me = cloneAvatarData(baseAv, { name: baseAv.name || "Você", id: userId });
 
         const roomName = salaId;
 
@@ -353,6 +401,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const listaRef = collection(db, "salas", salaId, "presencas");
 
         async function enterPresence() {
+            const av = getCurrentAvatar();
+            const hairVariant = av.hairStyleVariant || pickVariant(av.hairStyle || "", "hair");
+            const eyesVariant = av.eyesStyleVariant || pickVariant(av.eyesStyle || "", "eyes");
+            const mouthVariant = av.mouthStyleVariant || pickVariant(av.mouthStyle || "", "mouth");
+            const clothesVariant = av.clothesStyleVariant || pickVariant(av.clothesStyle || "", "clothes");
+            const accessoryVariant = av.accessoryStyleVariant || pickVariant(av.accessoryStyle || "", "acc");
+
             try {
                 await setDoc(
                     presencaRef,
@@ -360,14 +415,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                         id: userId,
                         online: true,
                         entrouEm: serverTimestamp(),
-                        nome: avatar.name || "Você",
-                        skinColor: avatar.skinColor || "#F7A8C8",
+                        nome: av.name || "Você",
+                        skinColor: av.skinColor || "#F7A8C8",
                         hairVariant,
                         eyesVariant,
                         mouthVariant,
                         clothesVariant,
                         accessoryVariant,
-                        hairColor: avatar.hairColor || "#1F1F1F"
+                        hairColor: av.hairColor || "#1F1F1F"
                     },
                     { merge: true }
                 );
@@ -423,6 +478,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             renderParticipants(ordered.length ? ordered : [me]);
 
+            // Reafirma o avatar no topo com o valor mais recente (reidrata apenas na geral)
+            applyChatAvatar(getCurrentAvatar());
+
             if (onlineCountEl) onlineCountEl.textContent = String(participants.length || 1);
         }, err => {
             console.error("Erro ao escutar presença", err);
@@ -432,6 +490,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         window.addEventListener("beforeunload", () => {
             leavePresence();
+        });
+
+        // Se o avatar foi salvo/alterado em outra aba, reidrata e reaplica imediatamente
+        window.addEventListener("storage", evt => {
+            if (evt.key !== "popverseAvatar") return;
+            const updated = tryParseAvatar(evt.newValue);
+            if (updated) {
+                applyChatAvatar(updated);
+                try {
+                    localStorage.setItem("popverseAvatar", JSON.stringify(updated));
+                } catch (err) {
+                    console.warn("Não foi possível atualizar cache local do avatar", err);
+                }
+            }
         });
 
         // Limpa histórico ao entrar para que o chat comece vazio a cada sessão
