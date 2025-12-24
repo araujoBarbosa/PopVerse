@@ -1,29 +1,42 @@
-const chatLog = document.getElementById("chat-log");
-const chatButtons = document.querySelectorAll(".chat-actions button");
+import { db, auth } from "./firebase.js";
+import { getSalaId } from "./utils.js";
+import { addXP } from "./xp.js";
+import { checarModeracao } from "./moderacao.js";
+import {
+    collection,
+    addDoc,
+    query,
+    orderBy,
+    onSnapshot,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-function addBubble(text, role) {
-    if (!chatLog) return;
-    const bubble = document.createElement("div");
-    bubble.className = `chat-bubble ${role}`;
-    bubble.textContent = text;
-    chatLog.appendChild(bubble);
-}
+const salaId = getSalaId();
+const mensagensRef = collection(db, "salas", salaId, "mensagens");
 
-function guidedReply(prompt) {
-    const replies = [
-        "Legal! Vamos manter a conversa segura e positiva.",
-        "Ótimo ponto. Quer recomendar uma música?",
-        "Adorei a vibe. Qual outro grupo você curte?",
-        "Vamos combinar horários que funcionem para todos."
-    ];
-    const pick = replies[Math.floor(Math.random() * replies.length)];
-    addBubble(prompt, "me");
-    addBubble(pick, "bot");
-}
+export async function enviarMensagem(texto) {
+    if (!texto || !texto.trim()) return;
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
 
-chatButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        const msg = btn.dataset.message || "Oi!";
-        guidedReply(msg);
+    const status = await checarModeracao(salaId, uid);
+    if (status.ban || status.mute) return;
+
+    await addDoc(mensagensRef, {
+        texto: texto.trim(),
+        uid,
+        criadoEm: serverTimestamp()
     });
-});
+
+    await addXP(salaId, 5);
+}
+
+export function escutarMensagens(render) {
+    const myUid = auth.currentUser?.uid || "";
+    const q = query(mensagensRef, orderBy("criadoEm"));
+    onSnapshot(q, snapshot => {
+        const msgs = [];
+        snapshot.forEach(docSnap => msgs.push(docSnap.data()));
+        render(msgs, myUid);
+    });
+}

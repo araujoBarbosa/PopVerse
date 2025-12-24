@@ -29,12 +29,14 @@
     <!-- CHAT -->
     <main class="chat">
         <h1 id="roomTitle">Sala</h1>
-        <div class="room-occupancy" id="roomOccupancy"></div>
+        <div class="room-occupancy" id="roomOccupancy">Usuários online: <strong id="onlineCount">0</strong></div>
 
         <section class="chat-stage">
             <div class="room-participants" id="roomParticipants"></div>
 
-            <div class="messages" id="messages"></div>
+            <div class="messages" id="messages">
+                <ul id="chatMensagens"></ul>
+            </div>
 
             <form class="chat-form" id="chatForm">
                 <input type="text" id="chatInput" placeholder="Escreva aqui" maxlength="200" aria-label="Mensagem" />
@@ -62,12 +64,21 @@
                 <button type="button" class="btn primary" id="musicSend">Compartilhar música</button>
                 <small class="helper-text">Use links públicos e seguros.</small>
             </div>
+
+            <div class="ranking">
+                <h3>Ranking da Sala</h3>
+                <ul id="ranking"></ul>
+            </div>
+
+            <button id="btnGoogle" class="btn secondary">Conectar com Google</button>
         </section>
 
         <a href="./salas.html" class="btn secondary">Voltar</a>
     </main>
 
-    <script src="./js/sala.js"></script>
+    <script type="module" src="./js/utils.js"></script>
+    <script type="module" src="./js/firebase.js"></script>
+    <script type="module" src="./js/sala.js"></script>
     <script>
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("./sw.js");
