@@ -5,12 +5,31 @@ document.querySelectorAll("[data-scroll]").forEach(btn => {
     });
 });
 
-const enterButton = document.querySelector(".home .btn.primary");
+const familyEnter = document.getElementById("familyEnter");
+const familyCopy = document.getElementById("familyCopy");
 
-if (enterButton) {
-    enterButton.addEventListener("click", () => {
-        const hasAvatar = !!localStorage.getItem("popverseAvatar");
-        window.location.href = hasAvatar ? "./salas.html" : "./avatar.html";
+function getFamilyLink() {
+    return new URL("./sala.html?id=geral", window.location.href).href;
+}
+
+if (familyEnter) {
+    familyEnter.addEventListener("click", () => {
+        // Pula direto para a sala geral, garantindo mesma URL para todos.
+        window.location.href = getFamilyLink();
+    });
+}
+
+if (familyCopy) {
+    familyCopy.addEventListener("click", async () => {
+        const link = getFamilyLink();
+        try {
+            await navigator.clipboard.writeText(link);
+            familyCopy.textContent = "Link copiado!";
+            setTimeout(() => (familyCopy.textContent = "Copiar link da sala"), 1500);
+        } catch (err) {
+            familyCopy.textContent = "Não deu para copiar";
+            setTimeout(() => (familyCopy.textContent = "Copiar link da sala"), 2000);
+        }
     });
 }
 
