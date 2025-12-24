@@ -307,49 +307,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const me = cloneAvatarData(avatar, { name: avatar.name || "Você", id: userId });
 
         const roomName = salaId;
-        const roomKey = `popverseRoomParticipants_${roomName}`;
-
-        function loadRoomParticipants() {
-            try {
-                const stored = JSON.parse(localStorage.getItem(roomKey) || "[]");
-                if (Array.isArray(stored)) return stored;
-            } catch (err) {
-                return [];
-            }
-            return [];
-        }
-
-        function saveRoomParticipants(list) {
-            localStorage.setItem(roomKey, JSON.stringify(list));
-        }
-
-        function upsertParticipant(list, participant) {
-            const idx = list.findIndex(p => p.id && participant.id && p.id === participant.id);
-            if (idx >= 0) {
-                list[idx] = participant;
-            } else {
-                list.push(participant);
-            }
-            return list;
-        }
-
-        const initialRoomParticipants = upsertParticipant(loadRoomParticipants(), { ...me, id: userId });
-        saveRoomParticipants(initialRoomParticipants);
-
-        function renderRoomFromStorage() {
-            const all = loadRoomParticipants();
-            const guests = all.filter(p => p.id !== userId).map(data => cloneAvatarData(data));
-            const orderedParticipants = [me, ...guests].slice(0, 4);
-            renderParticipants(orderedParticipants);
-        }
-
-        renderRoomFromStorage();
-
-        window.addEventListener("storage", evt => {
-            if (evt.key === roomKey) {
-                renderRoomFromStorage();
-            }
-        });
 
         // Presença em tempo real (Firestore)
         const onlineCountEl = document.getElementById("onlineCount");
@@ -427,13 +384,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (occupancyEl) occupancyEl.textContent = `${participants.length}/4`;
         });
 
-        function removeSelfFromRoom() {
-            const remaining = loadRoomParticipants().filter(p => p.id !== userId);
-            saveRoomParticipants(remaining);
-        }
-
         window.addEventListener("beforeunload", () => {
-            removeSelfFromRoom();
             leavePresence();
         });
 
