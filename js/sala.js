@@ -1,4 +1,4 @@
-import { db, auth } from "./firebase.js";
+import { db, auth, ensureAnonymousAuth } from "./firebase.js";
 import { getSalaId } from "./utils.js";
 import {
     collection,
@@ -299,9 +299,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    signInAnonymously(auth).catch(err => {
-        console.error("Falha ao autenticar anonimamente", err);
-    });
+    // Garante que o login anônimo é iniciado mesmo se o import do firebase não fizer o await
+    ensureAnonymousAuth();
 
     async function iniciarSala(userId) {
         const me = cloneAvatarData(avatar, { name: avatar.name || "Você", id: userId });

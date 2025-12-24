@@ -16,13 +16,21 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-// login anônimo com mensagem clara em caso de má configuração
-try {
-    await signInAnonymously(auth);
-} catch (err) {
-    console.error(
-        "Falha no login anônimo. Verifique se Authentication está habilitado e se as chaves do app Web estão corretas.",
-        err
-    );
-    throw err;
+// Login anônimo disparado sem usar top-level await (evita travar browsers que não suportam)
+export async function ensureAnonymousAuth() {
+    try {
+        if (!auth.currentUser) {
+            await signInAnonymously(auth);
+        }
+        return auth.currentUser;
+    } catch (err) {
+        console.error(
+            "Falha no login anônimo. Verifique se Authentication está habilitado e se as chaves do app Web estão corretas.",
+            err
+        );
+        return null;
+    }
 }
+
+// Dispara imediatamente; a página continua carregando enquanto o login ocorre
+ensureAnonymousAuth();
