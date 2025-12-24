@@ -347,6 +347,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await enterPresence();
 
+        // Garante que o próprio usuário aparece mesmo antes do snapshot do Firestore
+        renderParticipants([me]);
+        if (onlineCountEl) onlineCountEl.textContent = "1";
+
         function presenceToParticipant(docSnap) {
             const data = docSnap.data() || {};
             return cloneAvatarData({
@@ -380,8 +384,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             renderParticipants(ordered.length ? ordered : [me]);
 
-            if (onlineCountEl) onlineCountEl.textContent = String(participants.length);
-            if (occupancyEl) occupancyEl.textContent = `${participants.length}/4`;
+            if (onlineCountEl) onlineCountEl.textContent = String(participants.length || 1);
+        }, err => {
+            console.error("Erro ao escutar presença", err);
+            renderParticipants([me]);
+            if (onlineCountEl) onlineCountEl.textContent = "1";
         });
 
         window.addEventListener("beforeunload", () => {
@@ -417,9 +424,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (chatForm && chatInput && chatList) {
             chatForm.addEventListener("submit", async e => {
                 e.preventDefault();
-                await enviarMensagem(chatInput.value || "");
+                const texto = chatInput.value || "";
                 chatInput.value = "";
                 chatInput.focus();
+
+                try {
+                    await enviarMensagem(texto);
+                } catch (err) {
+                    console.error("Falha ao enviar mensagem", err);
+                }
             });
 
             escutarMensagens(async (mensagens, meuId) => {
@@ -428,12 +441,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const li = document.createElement("li");
                     li.className = m.uid === meuId ? "me" : "other";
 
-                    const avatar = await carregarAvatar(m.uid);
-                    const imgSrc = avatar ? `avatars/${avatar}` : "avatars/default.png";
+                    let imgSrc = "avatars/default.png";
+                    try {
+                        const avatar = await carregarAvatar(m.uid);
+                        if (avatar) imgSrc = `avatars/${avatar}`;
+                    } catch (err) {
+                        console.warn("Não foi possível carregar avatar do autor", err);
+                    }
+
+                    const safeText = sanitizeText(m.texto || "");
 
                     li.innerHTML = `
                         <img src="${imgSrc}" class="chat-avatar" alt="avatar">
-                        <span>${m.texto || ""}</span>
+                        <span>${safeText}</span>
                     `;
                     chatList.appendChild(li);
                 }
