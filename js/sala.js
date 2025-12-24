@@ -6,24 +6,51 @@ import {
     setDoc,
     deleteDoc,
     onSnapshot,
-    serverTimestamp
+    serverTimestamp,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { enviarMensagem, enviarMensagemVoz, escutarMensagens } from "./chat.js";
 import { escutarRanking } from "./ranking.js";
 import { calcularNivel } from "./levels.js";
-import { carregarAvatar } from "./avatar-store.js";
+import { carregarAvatar, salvarAvatar } from "./avatar-store.js";
 import { converterParaGoogle } from "./converterConta.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const savedAvatar = localStorage.getItem("popverseAvatar");
-    if (!savedAvatar) {
+    await ensureAnonymousAuth();
+
+    async function carregarAvatarSincronizado() {
+        const savedAvatar = localStorage.getItem("popverseAvatar");
+        const avatarLocal = savedAvatar ? JSON.parse(savedAvatar || "{}") : null;
+
+        // Se já tem local, prioriza ele e apenas tenta replicar para a nuvem em background
+        if (avatarLocal) {
+            salvarAvatar(avatarLocal).catch(err => console.warn("Não foi possível salvar avatar local na nuvem", err));
+            return avatarLocal;
+        }
+
+        // Caso não tenha local, tenta buscar da nuvem
+        try {
+            const uid = auth.currentUser?.uid;
+            const cloudAvatar = await carregarAvatar(uid);
+            if (cloudAvatar) {
+                localStorage.setItem("popverseAvatar", JSON.stringify(cloudAvatar));
+                return cloudAvatar;
+            }
+        } catch (err) {
+            console.warn("Falha ao carregar avatar da nuvem", err);
+        }
+
+        return null;
+    }
+
+    const avatar = await carregarAvatarSincronizado();
+
+    if (!avatar) {
         window.location.href = "./avatar.html";
         return;
     }
-
-    const avatar = JSON.parse(savedAvatar || "{}");
 
     const salaId = getSalaId();
     const chatUser = document.getElementById("chatUser");
@@ -308,6 +335,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const roomName = salaId;
 
+        async function limparMensagensDaSala() {
+            try {
+                const mensagensRef = collection(db, "salas", salaId, "mensagens");
+                const snap = await getDocs(mensagensRef);
+                const removals = [];
+                snap.forEach(docSnap => removals.push(deleteDoc(docSnap.ref)));
+                await Promise.all(removals);
+            } catch (err) {
+                console.error("Falha ao limpar mensagens da sala", err);
+            }
+        }
+
         // Presença em tempo real (Firestore)
         const onlineCountEl = document.getElementById("onlineCount");
         const presencaRef = doc(db, "salas", salaId, "presencas", userId);
@@ -394,6 +433,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.addEventListener("beforeunload", () => {
             leavePresence();
         });
+
+        // Limpa histórico ao entrar para que o chat comece vazio a cada sessão
+        await limparMensagensDaSala();
 
         // Nome da sala pela URL
         const roomTitle = document.getElementById("roomTitle");

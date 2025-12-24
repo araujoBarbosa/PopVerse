@@ -244,6 +244,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             localStorage.setItem("popverseAvatar", JSON.stringify(avatarData));
 
+            if (window.popverseSaveAvatar) {
+                window.popverseSaveAvatar(avatarData).catch(err => {
+                    console.warn("Não foi possível salvar avatar na nuvem", err);
+                });
+            }
+
             window.location.href = "./salas.html";
         });
     }
