@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz dos Fandoms – PopVerse</title>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top, #6d28d9, #4c1d95, #1a1035);
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            color: #fff;
+            padding: 24px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .score-row {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .score-pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            font-size: 0.9rem;
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 18px;
+            margin-top: 24px;
+
+            < !DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Quiz dos Fandoms – PopVerse</title><style> :root {
+                --pv-bg1: #6d28d9;
+                --pv-bg2: #4c1d95;
+                --pv-bg3: #1a1035;
+                --pv-card: rgba(12, 10, 40, 0.96);
+                --pv-accent: #b388ff;
+                --pv-accent-soft: rgba(179, 136, 255, 0.4);
+                --pv-success: #69f0ae;
+                --pv-error: #ff5252;
+                --pv-text: #fdfbff;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: radial-gradient(circle at top, var(--pv-bg1), var(--pv-bg2), var(--pv-bg3));
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                color: var(--pv-text);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 16px;
+            }
+
+            main {
+                width: 100%;
+                max-width: 480px;
+                background: var(--pv-card);
+                border-radius: 24px;
+                padding: 20px 18px 22px;
+                box-shadow:
+                    0 0 28px rgba(0, 0, 0, 0.6),
+                    0 0 30px rgba(179, 136, 255, 0.4);
+                border: 1px solid var(--pv-accent-soft);
+            }
+
+            header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .mascot {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: radial-gradient(circle at 30% 20%, #ffffff, #f9a8ff);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.8rem;
+                box-shadow: 0 0 12px rgba(249, 168, 255, 0.9);
+            }
+
+            .title-block h1 {
+                font-size: 1.3rem;
+            }
+
+            .title-block p {
+                font-size: 0.85rem;
+                opacity: 0.85;
+            }
+
+            .progress-bar {
+                margin-top: 10px;
+                width: 100%;
+                height: 10px;
+                border-radius: 999px;
+                background: rgba(44, 30, 100, 0.9);
+                overflow: hidden;
+                position: relative;
+            }
+
+            .progress-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 0%;
+                border-radius: inherit;
+                background: linear-gradient(90deg, #7c4dff, #b388ff, #ff80ab);
+                box-shadow: 0 0 12px rgba(179, 136, 255, 0.9);
+                transition: width 0.25s ease;
+            }
+
+            .question-box {
+                margin-top: 18px;
+                padding: 16px 14px;
+                border-radius: 18px;
+                background: radial-gradient(circle at top, rgba(90, 64, 190, 0.8), rgba(12, 10, 40, 0.95));
+                border: 1px solid var(--pv-accent-soft);
+            }
+
+            .question-text {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            .mascot-line {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 8px;
+                font-size: 0.85rem;
+                opacity: 0.9;
+            }
+
+            .mascot-mini {
+                font-size: 1.3rem;
+            }
+
+            .options {
+                margin-top: 14px;
+            }
+
+            .option {
+                display: block;
+                width: 100%;
+                text-align: left;
+                background: rgba(255, 255, 255, 0.07);
+                border-radius: 14px;
+                padding: 12px;
+                font-size: 0.95rem;
+                margin-bottom: 10px;
+                cursor: pointer;
+                border: 1px solid transparent;
+                transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            }
+
+            .option:hover {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            }
+
+            .option.correct {
+                background: rgba(105, 240, 174, 0.16);
+                border-color: var(--pv-success);
+                box-shadow: 0 0 12px rgba(105, 240, 174, 0.9);
+            }
+
+            .option.wrong {
+                background: rgba(255, 82, 82, 0.12);
+                border-color: var(--pv-error);
+                box-shadow: 0 0 12px rgba(255, 82, 82, 0.9);
+            }
+
+            .status-line {
+                margin-top: 8px;
+                font-size: 0.85rem;
+                opacity: 0.9;
+                min-height: 1.1em;
+            }
+
+            .status-line.correct {
+                color: var(--pv-success);
+            }
+
+            .status-line.wrong {
+                color: var(--pv-error);
+            }
+
+            .bottom-ui {
+                margin-top: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 0.8rem;
+                opacity: 0.9;
+            }
+
+            #nextBtn {
+                margin-top: 10px;
+                width: 100%;
+                padding: 12px;
+                border-radius: 999px;
+                border: none;
+                background: #ffffff;
+                color: #5b21b6;
+                font-weight: 700;
+                font-size: 0.9rem;
+                cursor: pointer;
+                display: none;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+                transition: transform 0.12s ease, box-shadow 0.12s ease;
+            }
+
+            #nextBtn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+            }
+
+            .end-box {
+                margin-top: 40px;
+                padding: 26px 22px;
+                border-radius: 24px;
+                max-width: 480px;
+                background: radial-gradient(circle at top, rgba(95, 58, 200, 0.9), rgba(20, 10, 70, 0.96));
+                border: 1px solid rgba(179, 136, 255, 0.4);
+                box-shadow:
+                    0 0 28px rgba(0, 0, 0, 0.5),
+                    0 0 32px rgba(179, 136, 255, 0.35);
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
+
+            .end-box h2 {
+                font-size: 1.2rem;
+                margin-bottom: 6px;
+            }
+
+            .end-box p {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }
+
+            .xp-highlight {
+                font-size: 1rem;
+                margin: 8px 0;
+                color: var(--pv-success);
+                text-shadow: 0 0 10px rgba(105, 240, 174, 0.9);
+            }
+
+            .end-actions {
+                margin-top: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+                width: 100%;
+            }
+
+            .btn {
+                padding: 14px 20px;
+                border-radius: 999px;
+                border: none;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: 0.15s;
+                width: 100%;
+                max-width: 300px;
+                margin-inline: auto;
+            }
+
+            .btn-primary {
+                background: #ffffff;
+                color: #5b21b6;
+                font-weight: 700;
+            }
+
+            .btn-primary:hover {
+                background: #e8e0ff;
+            }
+
+            .btn-ghost {
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                color: var(--pv-text);
+            }
+
+            .btn-ghost:hover {
+                background: rgba(179, 136, 255, 0.15);
+            }
+
+            @media (min-width: 480px) {
+                main {
+                    padding: 24px 22px;
+                }
+            }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <div class="mascot">🐰</div>
+            <div class="title-block">
+                <h1>Quiz dos Fandoms 🎤</h1>
+                <p>O mascote PopVerse quer saber: quanto você entende de K-pop?</p>
+            </div>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <section id="quizSection">
+            <div class="question-box">
+                <div class="question-text" id="questionText">Carregando pergunta...</div>
+
+                <div class="mascot-line" id="mascotLine">
+                    <span class="mascot-mini">🐰</span>
+                    <span id="mascotSpeech">Calma, PopStar... vamos começar!</span>
+                </div>
+
+                <div class="options" id="options"></div>
+
+                <div class="status-line" id="statusLine"></div>
+
+                <div class="bottom-ui">
+                    <span>Pergunta <span id="currentIndex">1</span>/<span id="totalQuestions">5</span></span>
+                    <span>Acertos seguidos: <span id="streakSpan">0</span> 🔥</span>
+                </div>
+
+                <button id="nextBtn" type="button">Próxima pergunta ➜</button>
+            </div>
+        </section>
+
+        <section id="endSection" class="end-box" style="display:none;">
+            <h2 id="endTitle">Fim do Quiz! 🎉</h2>
+            <p id="endSummary">Você mandou muito bem!</p>
+            <p class="xp-highlight" id="xpReward">+0 XP</p>
+            <p id="extraInfo" style="font-size:0.8rem; opacity:0.85;">
+                O mascote PopVerse está orgulhoso de você! 🐰💜
+            </p>
+            <div class="end-actions">
+                <button class="btn btn-primary" onclick="window.location.reload()">
+                    Jogar novamente
+                </button>
+
+                <button class="btn btn-ghost" onclick="window.location.href='games.html'">
+                    ← Voltar para Jogos PopVerse
+                </button>
+
+                <button class="btn btn-ghost" onclick="window.location.href='avatar.html'">
+                    Ir para o Avatar ⭐
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { db } from "./js/firebase.js";
+        import { getPlayerNickname } from "./js/utils.js";
+        import {
+            collection,
+            addDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ---------- XP ----------
+        const XP_KEY = "popverseXP";
+
+        function getXP() {
+            return parseInt(localStorage.getItem(XP_KEY) || "0", 10);
+        }
+
+        function addXP(xp) {
+            const total = getXP() + xp;
+            localStorage.setItem(XP_KEY, String(total));
+        }
+
+        // ---------- Salvar ranking no Firestore ----------
+        async function salvarRankingQuiz(score, xpFinal) {
+            try {
+                const jogador = getPlayerNickname();
+                await addDoc(collection(db, "rankingQuiz"), {
+                    jogador,
+                    score,
+                    xp: xpFinal,
+                    criadoEm: serverTimestamp()
+                });
+            } catch (err) {
+                console.error("Erro ao salvar ranking:", err);
+            }
+        }
+
+        // ---------- Perguntas ----------
+        const questions = [
+            {
+                q: "Qual é o fandom do grupo BTS?",
+                options: ["BLINK", "ARMY", "Once"],
+                correct: 1
+            },
+            {
+                q: "Qual fandom é famoso pelo 💜 (coração roxo)?",
+                options: ["Stay", "ARMY", "ReVeluv"],
+                correct: 1
+            },
+            {
+                q: "Qual desses é o fandom do BLACKPINK?",
+                options: ["BLINK", "MOA", "Orbit"],
+                correct: 0
+            },
+            {
+                q: "Qual fandom tem nome que lembra 'amanhã' (tomorrow)?",
+                options: ["MOA", "VIP", "Stay"],
+                correct: 0
+            },
+            {
+                q: "Qual desses é o fandom do Stray Kids?",
+                options: ["Stay", "Carat", "Midzy"],
+                correct: 0
+            },
+            {
+                q: "Qual fandom lembra a palavra 'carat' (como diamante)?",
+                options: ["Carat (Seventeen)", "Buddy (GFriend)", "Engene (Enhypen)"],
+                correct: 0
+            },
+            {
+                q: "Qual fandom tem nome que parece 'engenharia' (Engene)?",
+                options: ["ATEEZ", "ENHYPEN", "TXT"],
+                correct: 1
+            },
+            {
+                q: "Qual grupo é famoso pela cor roxa e frase 'I purple you'?",
+                options: ["BTS", "Twice", "Itzy"],
+                correct: 0
+            },
+            {
+                q: "Qual fandom é conhecido como 'Once'?",
+                options: ["Twice", "Red Velvet", "ITZY"],
+                correct: 0
+            },
+            {
+                q: "Qual desses fandoms é do grupo TXT?",
+                options: ["MOA", "Carat", "VIP"],
+                correct: 0
+            }
+        ];
+
+        // Embaralhar perguntas
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        const TOTAL = 7; // quantas perguntas usar por rodada
+        const quizQuestions = shuffleArray(questions).slice(0, TOTAL);
+
+        // ---------- Estado ----------
+        let currentIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let totalXPThisGame = 0;
+        let answered = false;
+
+        const questionTextEl = document.getElementById("questionText");
+        const optionsEl = document.getElementById("options");
+        const statusLineEl = document.getElementById("statusLine");
+        const mascotSpeechEl = document.getElementById("mascotSpeech");
+        const currentIndexEl = document.getElementById("currentIndex");
+        const totalQuestionsEl = document.getElementById("totalQuestions");
+        const streakSpanEl = document.getElementById("streakSpan");
+        const nextBtn = document.getElementById("nextBtn");
+        const progressFill = document.getElementById("progressFill");
+
+        const quizSection = document.getElementById("quizSection");
+        const endSection = document.getElementById("endSection");
+        const endTitle = document.getElementById("endTitle");
+        const endSummary = document.getElementById("endSummary");
+        const xpReward = document.getElementById("xpReward");
+
+        totalQuestionsEl.textContent = TOTAL;
+
+        // ---------- Audio beeps ----------
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtx;
+        }
+
+        function playBeep(freq, duration, type = "sine") {
+            try {
+                const ctx = getAudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                // se não tocar, tudo bem
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = (currentIndex / TOTAL) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        const frasesMascoteAcerto = [
+            "🐰 UAU! Você é muito fã mesmo!",
+            "🐰 Arrasou, PopStar! Continua assim!",
+            "🐰 Brilhou mais que o palco hoje!",
+            "🐰 Certinho! Seu avatar vai amar esse XP!"
+        ];
+
+        const frasesMascoteErro = [
+            "🐰 Quase! Tenta de novo na próxima ✨",
+            "🐰 Não foi dessa vez, mas você tá indo bem!",
+            "🐰 Todo fã erra às vezes, segue o show!",
+            "🐰 Vamos tentar mais uma? Eu confio em você 💜"
+        ];
+
+        const frasesMascoteInicio = [
+            "🐰 Respira fundo... o show vai começar!",
+            "🐰 Lembra das cores e dos fandoms, hein!",
+            "🐰 Confio em você, PopStar!",
+            "🐰 Vamos ver se você é fã de verdade 😏"
+        ];
+
+        function loadQuestion() {
+            const q = quizQuestions[currentIndex];
+            if (!q) return;
+
+            answered = false;
+            statusLineEl.textContent = "";
+            statusLineEl.className = "status-line";
+            mascotSpeechEl.textContent =
+                frasesMascoteInicio[currentIndex % frasesMascoteInicio.length];
+            streakSpanEl.textContent = streak.toString();
+            nextBtn.style.display = "none";
+
+            currentIndexEl.textContent = currentIndex + 1;
+            updateProgressBar();
+
+            questionTextEl.textContent = q.q;
+            optionsEl.innerHTML = "";
+
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "option";
+                btn.textContent = opt;
+                btn.addEventListener("click", () => handleAnswer(btn, i === q.correct));
+                optionsEl.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(btn, isCorrect) {
+            if (answered) return;
+            answered = true;
+
+            const allOpt = document.querySelectorAll(".option");
+            allOpt.forEach(o => (o.disabled = true));
+
+            if (isCorrect) {
+                btn.classList.add("correct");
+                score++;
+                streak++;
+                streakSpanEl.textContent = streak.toString();
+
+                const baseXP = 15;
+                const bonusXP = (streak - 1) * 5;
+                const gained = baseXP + Math.max(0, bonusXP);
+                totalXPThisGame += gained;
+
+                statusLineEl.textContent = `Acertou! +${gained} XP 🎉`;
+                statusLineEl.classList.add("correct");
+                mascotSpeechEl.textContent =
+                    frasesMascoteAcerto[Math.floor(Math.random() * frasesMascoteAcerto.length)];
+
+                playBeep(880, 0.18, "triangle");
+            } else {
+                btn.classList.add("wrong");
+                streak = 0;
+                streakSpanEl.textContent = "0";
+                statusLineEl.textContent =
+                    "Errou... mas fica tranquilo, tem mais pergunta 😉";
+                statusLineEl.classList.add("wrong");
+                mascotSpeechEl.textContent =
+                    frasesMascoteErro[Math.floor(Math.random() * frasesMascoteErro.length)];
+                playBeep(220, 0.22, "sawtooth");
+            }
+
+            nextBtn.style.display = "block";
+        }
+
+        nextBtn.addEventListener("click", () => {
+            currentIndex++;
+            if (currentIndex >= TOTAL) {
+                finishGame();
+                return;
+            }
+            loadQuestion();
+        });
+
+        async function finishGame() {
+            quizSection.style.display = "none";
+            endSection.style.display = "block";
+
+            const ratio = score / TOTAL;
+            let bonus = 0;
+            if (ratio >= 0.9) bonus = 40;
+            else if (ratio >= 0.7) bonus = 25;
+            else if (ratio >= 0.5) bonus = 10;
+
+            const xpFinal = totalXPThisGame + bonus;
+            if (xpFinal > 0) {
+                addXP(xpFinal);
+            }
+
+            // salva ranking geral PopVerse
+            await salvarRankingQuiz(score, xpFinal);
+
+            if (score === TOTAL) {
+                endTitle.textContent = "PERFEITO! Você é uma lenda do K-pop! 🌟";
+            } else if (ratio >= 0.7) {
+                endTitle.textContent = "Você mandou muito bem! 🎉";
+            } else {
+                endTitle.textContent = "Bom trabalho! Vamos treinar mais? 💜";
+            }
+
+            endSummary.textContent = `Você acertou ${score} de ${TOTAL} perguntas.`;
+            xpReward.textContent = `+${xpFinal} XP ganhos`;
+
+            playBeep(1046, 0.23, "triangle");
+            setTimeout(() => playBeep(1318, 0.23, "triangle"), 220);
+        }
+
+        // start
+        loadQuestion();
+    </script>
+</body>
+
+</html>

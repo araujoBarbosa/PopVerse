@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jogos PopVerse 🎮</title>
+
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #c084fc, #a855f7, #6d28d9);
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            color: #fff;
+            padding: 32px 16px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        .games-container {
+            margin-top: 30px;
+            display: grid;
+            gap: 16px;
+            justify-items: center;
+        }
+
+        .game-card {
+            width: 100%;
+            max-width: 340px;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(6px);
+            padding: 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border: 2px solid rgba(255, 255, 255, 0.28);
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+        }
+
+        .game-card h3 {
+            font-size: 1.15rem;
+            margin: 6px 0;
+        }
+
+        .game-card small {
+            opacity: 0.88;
+        }
+
+        .locked {
+            opacity: 0.55;
+            cursor: default;
+        }
+
+        .btn-back {
+            margin-top: 30px;
+            display: inline-block;
+            font-size: 0.9rem;
+            padding: 12px 20px;
+            border-radius: 999px;
+            background: #fff;
+            color: #6d28d9;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Jogos PopVerse 🎮</h1>
+    <p>Escolha um jogo e ganhe XP para deixar seu avatar mais incrível ✨</p>
+
+    <div class="games-container">
+
+        <!-- Jogo disponível -->
+        <div class="game-card" onclick="window.location.href='popverse-memory.html'">
+            <div style="font-size: 2.2rem;">🃏</div>
+            <h3>Idol Memory Match</h3>
+            <small>Ganhe XP encontrando os pares</small>
+        </div>
+
+        <!-- Jogo 2: Quiz dos Fandoms -->
+        <div class="game-card" onclick="window.location.href='quiz.html'">
+            <div style="font-size: 2.2rem;">❓</div>
+            <h3>Quiz dos Fandoms</h3>
+            <small>Ganhe XP respondendo</small>
+        </div>
+
+        <!-- Ranking PopVerse -->
+        <div class="game-card" onclick="window.location.href='ranking.html'">
+            <div style="font-size: 2.2rem;">🏆</div>
+            <h3>Ranking PopVerse</h3>
+            <small>Veja os Top PopStars do Quiz</small>
+        </div>
+
+        <!-- Jogo 3: Em breve -->
+        <div class="game-card locked">
+            <div style="font-size: 2.2rem;">🎤</div>
+            <h3>Dança do K-pop</h3>
+            <small>Em breve 🔒</small>
+        </div>
+    </div>
+
+    <a class="btn-back" href="index.html">← Voltar ao início</a>
+</body>
+
+</html>

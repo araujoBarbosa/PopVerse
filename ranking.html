@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking PopVerse 🏆</title>
+    <style>
+        :root {
+            --pv-bg1: #050315;
+            --pv-bg2: #1a1035;
+            --pv-bg3: #4c1d95;
+            --pv-accent: #b388ff;
+            --pv-gold: #ffd54f;
+            --pv-silver: #e0e0e0;
+            --pv-bronze: #ffb74d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, var(--pv-bg3), var(--pv-bg2), var(--pv-bg1));
+            font-family: system-ui, sans-serif;
+            color: #fff;
+            padding: 20px 16px 32px;
+            display: flex;
+            justify-content: center;
+        }
+
+        main {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .panel {
+            margin-top: 18px;
+            background: rgba(8, 5, 32, 0.98);
+            border-radius: 24px;
+            padding: 16px 14px;
+            box-shadow: 0 0 32px rgba(0, 0, 0, 0.6), 0 0 26px rgba(179, 136, 255, 0.5);
+            border: 1px solid rgba(179, 136, 255, 0.4);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .panel-header span {
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+        .ranking-list {
+            list-style: none;
+            margin-top: 6px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 10px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            background: rgba(29, 22, 75, 0.9);
+            border: 1px solid rgba(179, 136, 255, 0.3);
+        }
+
+        .ranking-item.top1 {
+            border-color: var(--pv-gold);
+            box-shadow: 0 0 18px rgba(255, 213, 79, 0.8);
+        }
+
+        .ranking-item.top2 {
+            border-color: var(--pv-silver);
+            box-shadow: 0 0 16px rgba(224, 224, 224, 0.7);
+        }
+
+        .ranking-item.top3 {
+            border-color: var(--pv-bronze);
+            box-shadow: 0 0 16px rgba(255, 183, 77, 0.8);
+        }
+
+        .ranking-pos {
+            width: 40px;
+            font-size: 1rem;
+        }
+
+        .ranking-name {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .ranking-score {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .empty {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 12px 0 6px;
+        }
+
+        .btn-row {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #5b21b6;
+            font-weight: 700;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(179, 136, 255, 0.5);
+            color: #fff;
+        }
+
+        @media (min-width: 480px) {
+            body {
+                padding-top: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Ranking PopVerse 🏆</h1>
+        <p class="subtitle">Top PopStars do Quiz dos Fandoms 🎤💜</p>
+
+        <section class="panel">
+            <div class="panel-header">
+                <span>Top 10 jogadores</span>
+                <span id="lastUpdate" style="font-size:0.8rem; opacity:0.7;">Atualizando...</span>
+            </div>
+
+            <ul class="ranking-list" id="rankingList"></ul>
+
+            <p class="empty" id="emptyMsg" style="display:none;">
+                Ainda ninguém apareceu no palco... seja o primeiro a jogar o Quiz! ✨
+            </p>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" type="button" onclick="window.location.href='quiz.html'">
+                    🎤 Jogar o Quiz agora
+                </button>
+                <button class="btn btn-ghost" type="button" onclick="window.location.href='games.html'">
+                    ← Voltar para Jogos PopVerse
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { db } from "./js/firebase.js";
+        import {
+            collection,
+            query,
+            orderBy,
+            limit,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const rankingListEl = document.getElementById("rankingList");
+        const emptyMsgEl = document.getElementById("emptyMsg");
+        const lastUpdateEl = document.getElementById("lastUpdate");
+
+        const q = query(
+            collection(db, "rankingQuiz"),
+            orderBy("score", "desc"),
+            orderBy("xp", "desc"),
+            limit(10)
+        );
+
+        onSnapshot(q, (snapshot) => {
+            rankingListEl.innerHTML = "";
+            const docs = snapshot.docs;
+
+            if (!docs.length) {
+                emptyMsgEl.style.display = "block";
+            } else {
+                emptyMsgEl.style.display = "none";
+            }
+
+            let pos = 1;
+            docs.forEach(doc => {
+                const data = doc.data();
+                const li = document.createElement("li");
+                li.classList.add("ranking-item");
+
+                if (pos === 1) li.classList.add("top1");
+                else if (pos === 2) li.classList.add("top2");
+                else if (pos === 3) li.classList.add("top3");
+
+                let prefix;
+                if (pos === 1) prefix = "🏆";
+                else if (pos === 2) prefix = "🥈";
+                else if (pos === 3) prefix = "🥉";
+                else prefix = pos + "º";
+
+                li.innerHTML = `
+                <span class="ranking-pos">${prefix}</span>
+                <span class="ranking-name">${data.jogador || "PopStar"}</span>
+                <span class="ranking-score">${data.score || 0} pts • ${data.xp || 0} XP</span>
+            `;
+                rankingListEl.appendChild(li);
+                pos++;
+            });
+
+            const now = new Date();
+            lastUpdateEl.textContent =
+                "Atualizado: " + now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        });
+    </script>
+</body>
+
+</html>

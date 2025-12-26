@@ -399,8 +399,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         const onlineCountEl = document.getElementById("onlineCount");
         const presencaRef = doc(db, "salas", salaId, "presencas", userId);
         const listaRef = collection(db, "salas", salaId, "presencas");
+        const PRESENCE_STALE_MS = 45000;
+        let keepAliveInterval;
 
-        async function enterPresence() {
+        function timestampToMs(ts) {
+            if (!ts) return 0;
+            if (typeof ts === "number") return ts;
+            if (typeof ts.toMillis === "function") {
+                try {
+                    return ts.toMillis();
+                } catch (err) {
+                    return 0;
+                }
+            }
+            return 0;
+        }
+
+        async function cleanupStalePresences() {
+            try {
+                const snap = await getDocs(listaRef);
+                const removals = [];
+                snap.forEach(docSnap => {
+                    const data = docSnap.data() || {};
+                    const lastActiveMs = timestampToMs(data.lastActive) || timestampToMs(data.entrouEm);
+                    const isStale = !lastActiveMs || Date.now() - lastActiveMs > PRESENCE_STALE_MS;
+                    if (isStale) removals.push(deleteDoc(docSnap.ref));
+                });
+                if (removals.length) await Promise.allSettled(removals);
+            } catch (err) {
+                console.warn("Falha ao limpar presenças antigas", err);
+            }
+        }
+
+        async function keepAlivePresence() {
             const av = getCurrentAvatar();
             const hairVariant = av.hairStyleVariant || pickVariant(av.hairStyle || "", "hair");
             const eyesVariant = av.eyesStyleVariant || pickVariant(av.eyesStyle || "", "eyes");
@@ -415,6 +446,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         id: userId,
                         online: true,
                         entrouEm: serverTimestamp(),
+                        lastActive: serverTimestamp(),
                         nome: av.name || "Você",
                         skinColor: av.skinColor || "#F7A8C8",
                         hairVariant,
@@ -432,6 +464,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         async function leavePresence() {
+            clearInterval(keepAliveInterval);
             try {
                 await deleteDoc(presencaRef);
             } catch (err) {
@@ -439,7 +472,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        await enterPresence();
+        function startKeepAlive() {
+            clearInterval(keepAliveInterval);
+            keepAlivePresence();
+            keepAliveInterval = setInterval(keepAlivePresence, 15000);
+        }
+
+        await cleanupStalePresences();
+        startKeepAlive();
 
         // Garante que o próprio usuário aparece mesmo antes do snapshot do Firestore
         renderParticipants([me]);
@@ -465,6 +505,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 if (data && data.online === false) return;
+
+                const lastActiveMs = timestampToMs(data.lastActive) || timestampToMs(data.entrouEm);
+                const isStale = !lastActiveMs || Date.now() - lastActiveMs > PRESENCE_STALE_MS;
+                if (isStale) {
+                    deleteDoc(docSnap.ref).catch(() => { });
+                    return;
+                }
                 participants.push(presenceToParticipant(docSnap));
             });
 
@@ -481,7 +528,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Reafirma o avatar no topo com o valor mais recente (reidrata apenas na geral)
             applyChatAvatar(getCurrentAvatar());
 
-            if (onlineCountEl) onlineCountEl.textContent = String(participants.length || 1);
+            if (onlineCountEl) onlineCountEl.textContent = String(participants.length);
         }, err => {
             console.error("Erro ao escutar presença", err);
             renderParticipants([me]);
@@ -490,6 +537,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         window.addEventListener("beforeunload", () => {
             leavePresence();
+        });
+
+        window.addEventListener("pagehide", () => {
+            leavePresence();
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") {
+                leavePresence();
+            } else {
+                startKeepAlive();
+            }
         });
 
         // Se o avatar foi salvo/alterado em outra aba, reidrata e reaplica imediatamente
