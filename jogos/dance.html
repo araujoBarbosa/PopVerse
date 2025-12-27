@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dança do K-pop – PopVerse</title>
+    <link rel="stylesheet" href="../css/dance.css">
+</head>
+
+<body>
+    <div id="difficulty-screen" class="difficulty-screen">
+        <h2>Escolha a Dificuldade</h2>
+        <button class="btn-diff" data-diff="easy">Fácil 💜</button>
+        <button class="btn-diff" data-diff="normal">Normal ⚡</button>
+        <button class="btn-diff" data-diff="hard">Difícil 🔥</button>
+    </div>
+
+    <div id="countdown" class="countdown">
+        <span id="count-text">3</span>
+    </div>
+
+    <div class="spotlight left"></div>
+    <div class="spotlight right"></div>
+
+    <div class="stage-lights">
+        <div class="light"></div>
+        <div class="light"></div>
+        <div class="light"></div>
+    </div>
+
+    <div class="game-container">
+        <h1 class="title">🎤 Dança do K-pop</h1>
+        <p class="subtitle">Toque nas notas antes que elas sumam!</p>
+
+        <div id="lanes" class="lanes">
+            <div class="lane" id="lane1"></div>
+            <div class="lane" id="lane2"></div>
+            <div class="lane" id="lane3"></div>
+            <div class="lane" id="lane4"></div>
+        </div>
+
+        <div class="score-box">
+            XP: <span id="score">0</span>
+            <span id="combo" class="combo">Combo x0</span>
+        </div>
+
+        <button id="btnVoltar" class="back-btn">Voltar</button>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <h2>Resultado!</h2>
+        <p class="points">XP: <span id="final-xp">0</span></p>
+        <p class="combo">Combo Máximo: <span id="final-combo">0</span></p>
+        <div id="medal" class="medal"></div>
+        <button id="restart-btn" class="restart-btn">Jogar Novamente</button>
+    </div>
+
+    <audio id="bg-music" src="../assets/audio/divine.mp3"></audio>
+    <audio id="hitSound" src="../assets/sounds/hit.mp3"></audio>
+    <audio id="specialSound" src="../assets/sounds/special.mp3"></audio>
+
+    <script src="../js/dance.js" type="module"></script>
+</body>
+
+</html>

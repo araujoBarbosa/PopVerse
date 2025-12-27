@@ -31,6 +31,17 @@
         <h1 id="roomTitle">Sala</h1>
         <div class="room-occupancy" id="roomOccupancy">Usuários online: <strong id="onlineCount">0</strong></div>
 
+        <section class="ranking-sala">
+            <h3>🏆 Ranking da Sala</h3>
+            <p class="ranking-sala-subtitle">
+                Quem está brilhando mais nesta sala ✨
+            </p>
+
+            <ul id="rankingSala" class="ranking-sala-list">
+                <!-- o JS vai preencher aqui -->
+            </ul>
+        </section>
+
         <section class="chat-stage">
             <div class="room-participants" id="roomParticipants"></div>
 
@@ -63,11 +74,6 @@
                     aria-label="Link de música" />
                 <button type="button" class="btn primary" id="musicSend">Compartilhar música</button>
                 <small class="helper-text">Use links públicos e seguros.</small>
-            </div>
-
-            <div class="ranking">
-                <h3>Ranking da Sala</h3>
-                <ul id="ranking"></ul>
             </div>
 
             <button id="btnGoogle" class="btn secondary">Conectar com Google</button>

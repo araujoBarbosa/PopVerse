@@ -1608,3 +1608,66 @@ input[type="color"] {
     margin-top: 4px;
     border-radius: 12px;
 }
+
+/* DESIGN DO RANKING POPVERSE */
+
+.ranking-sala {
+    margin: 30px auto;
+    padding: 18px 20px;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    text-align: center;
+}
+
+.ranking-sala h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.ranking-sala-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.65;
+    margin: 4px 0 12px;
+}
+
+.ranking-sala-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ranking-sala-list li {
+    background: #ffffff;
+    margin: 8px 0;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* 🥇🥈🥉 Medalhas automáticas */
+.ranking-sala-list li:nth-child(1)::before {
+    content: "🥇";
+}
+
+.ranking-sala-list li:nth-child(2)::before {
+    content: "🥈";
+}
+
+.ranking-sala-list li:nth-child(3)::before {
+    content: "🥉";
+}
+
+.ranking-sala-list li::before {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+}

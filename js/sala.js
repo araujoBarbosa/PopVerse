@@ -574,7 +574,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const messages = document.getElementById("messages");
         const chatList = document.getElementById("chatMensagens");
-        const rankingList = document.getElementById("ranking");
+        const rankingList = document.getElementById("rankingSala");
         if (btnGoogle) {
             btnGoogle.addEventListener("click", () => converterParaGoogle());
         }
